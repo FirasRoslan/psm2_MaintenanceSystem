@@ -10,34 +10,28 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create 10 landlords
-        for ($i = 1; $i <= 10; $i++) {
-            User::create([
-                'name' => "Landlord {$i}",
-                'email' => "landlord{$i}@example.com",
-                'password' => Hash::make('12345678'),
-                'role' => 'landlord'
-            ]);
-        }
+        User::create([
+            'name' => 'Landlord User',
+            'email' => 'landlord@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'landlord',
+            'approval' => true
+        ]);
 
-        // Create 10 tenants
-        for ($i = 1; $i <= 10; $i++) {
-            User::create([
-                'name' => "Tenant {$i}",
-                'email' => "tenant{$i}@example.com",
-                'password' => Hash::make('12345678'),
-                'role' => 'tenant'
-            ]);
-        }
+        User::create([
+            'name' => 'Tenant User',
+            'email' => 'tenant@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'tenant',
+            'approval' => true
+        ]);
 
-        // Create 10 contractors
-        for ($i = 1; $i <= 10; $i++) {
-            User::create([
-                'name' => "Contractor {$i}",
-                'email' => "contractor{$i}@example.com",
-                'password' => Hash::make('12345678'),
-                'role' => 'contractor'
-            ]);
-        }
+        User::create([
+            'name' => 'Contractor User',
+            'email' => 'contractor@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'contractor',
+            'approval' => true
+        ]);
     }
 }

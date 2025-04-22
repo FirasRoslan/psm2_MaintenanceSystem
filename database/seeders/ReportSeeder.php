@@ -1,0 +1,27 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Report;
+use App\Models\User;
+use App\Models\Room;
+use App\Models\Item;
+use Illuminate\Database\Seeder;
+
+class ReportSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $tenant = User::where('role', 'tenant')->first();
+        $item = Item::first();
+        $room = Room::first();
+
+        Report::create([
+            'userID' => $tenant->id,
+            'itemID' => $item->itemID,
+            'roomID' => $room->roomID,
+            'report_desc' => 'Broken chair needs repair',
+            'report_image' => 'reports/default-report.jpg'
+        ]);
+    }
+}

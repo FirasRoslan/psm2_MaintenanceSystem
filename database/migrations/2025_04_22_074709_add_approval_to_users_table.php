@@ -9,17 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['landlord', 'tenant', 'contractor'])
-                  ->default('tenant')
-                  ->after('email');
-            $table->boolean('approval')->default(false)->after('role');
+            $table->boolean('approval')->default(false);
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'approval']);
+            $table->dropColumn('approval');
         });
     }
 };

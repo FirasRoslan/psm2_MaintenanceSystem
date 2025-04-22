@@ -27,12 +27,13 @@ class AuthController extends Controller
             $request->session()->regenerate();
             
             $user = Auth::user();
+         
             if ($user->isLandlord()) {
-                return redirect()->intended('/landlord/dashboard');
+                return redirect()->intended(route('landlord.dashboard'));
             } elseif ($user->isTenant()) {
-                return redirect()->intended('/tenant/dashboard');
-            } else {
-                return redirect()->intended('/contractor/dashboard');
+                return redirect()->intended(route('tenant.dashboard'));
+            } elseif ($user->isContractor()) {
+                return redirect()->intended(route('contractor.dashboard'));
             }
         }
 
