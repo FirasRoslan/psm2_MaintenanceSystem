@@ -13,7 +13,7 @@ class PhaseSeeder extends Seeder
         $task = Task::first();
 
         Phase::create([
-            'taskID' => $task->taskID,
+            'taskID' => $task->taskID,  // Already correct
             'arrangement_number' => 1,
             'phase_status' => 'pending',
             'start_timestamp' => now(),

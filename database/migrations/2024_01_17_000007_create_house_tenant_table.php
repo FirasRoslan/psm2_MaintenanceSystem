@@ -8,24 +8,27 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('houses', function (Blueprint $table) {
-            $table->bigIncrements('houseID');
+        Schema::create('house_tenant', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('userID');
-            $table->string('house_address');
-            $table->integer('house_number_room');
-            $table->integer('house_number_toilet');
-            $table->string('house_image');
+            $table->unsignedBigInteger('houseID');
             $table->timestamps();
 
             $table->foreign('userID')
                   ->references('userID')
                   ->on('users')
                   ->onDelete('cascade');
+            $table->foreign('houseID')
+                  ->references('houseID')
+                  ->on('houses')
+                  ->onDelete('cascade');
+
+            $table->unique(['userID', 'houseID']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('houses');
+        Schema::dropIfExists('house_tenant');
     }
 };

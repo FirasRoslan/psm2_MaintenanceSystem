@@ -15,8 +15,8 @@ class TaskSeeder extends Seeder
         $report = Report::first();
 
         Task::create([
-            'reportID' => $report->reportID,
-            'userID' => $contractor->id,
+            'reportID' => $report->reportID,  // Already correct
+            'userID' => $contractor->userID,  // Changed from id
             'task_status' => 'pending',
             'task_type' => 'repair'
         ]);

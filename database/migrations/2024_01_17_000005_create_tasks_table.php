@@ -11,10 +11,15 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id('taskID');
             $table->foreignId('reportID')->constrained('reports', 'reportID')->onDelete('cascade');
-            $table->foreignId('userID')->constrained('users', 'id');
+            $table->unsignedBigInteger('userID');
             $table->enum('task_status', ['pending', 'in_progress', 'completed']);
             $table->string('task_type');
             $table->timestamps();
+
+            $table->foreign('userID')
+                  ->references('userID')
+                  ->on('users')
+                  ->onDelete('cascade');
         });
     }
 

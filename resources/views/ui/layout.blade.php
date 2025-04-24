@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - PSM2 System</title>
+    <title>@yield('title') - Parit Raja Rental House</title>
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -84,36 +84,7 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <nav id="sidebar">
-            <div class="p-3">
-                <h5 class="mb-4">PSM2 System</h5>
-                @auth
-                    @if(auth()->user()->isLandlord())
-                        <a href="{{ route('landlord.dashboard') }}" class="sidebar-link mb-2">
-                            <i class="fas fa-home me-2"></i> Dashboard
-                        </a>
-                        <a href="{{ route('landlord.properties.index') }}" class="sidebar-link mb-2">
-                            <i class="fas fa-building me-2"></i> Properties
-                        </a>
-                        <a href="#" class="sidebar-link mb-2">
-                            <i class="fas fa-users me-2"></i> Tenants
-                        </a>
-                    @elseif(auth()->user()->isTenant())
-                        <a href="{{ route('tenant.dashboard') }}" class="sidebar-link mb-2">
-                            <i class="fas fa-home me-2"></i> Dashboard
-                        </a>
-                        <a href="#" class="sidebar-link mb-2">
-                            <i class="fas fa-file-alt me-2"></i> Reports
-                        </a>
-                    @elseif(auth()->user()->isContractor())
-                        <a href="{{ route('contractor.dashboard') }}" class="sidebar-link mb-2">
-                            <i class="fas fa-home me-2"></i> Dashboard
-                        </a>
-                        <a href="#" class="sidebar-link mb-2">
-                            <i class="fas fa-tasks me-2"></i> Tasks
-                        </a>
-                    @endif
-                @endauth
-            </div>
+            @include('ui.partials.sidebar')
         </nav>
 
         <!-- Page Content -->

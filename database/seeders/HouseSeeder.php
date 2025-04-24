@@ -13,7 +13,7 @@ class HouseSeeder extends Seeder
         $landlord = User::where('role', 'landlord')->first();
 
         House::create([
-            'userID' => $landlord->id,
+            'userID' => $landlord->userID,
             'house_address' => '123 Main Street, City',
             'house_number_room' => 3,
             'house_number_toilet' => 2,

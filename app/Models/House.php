@@ -10,6 +10,7 @@ class House extends Model
     use HasFactory;
 
     protected $primaryKey = 'houseID';
+    public $incrementing = true;
 
     protected $fillable = [
         'userID',
@@ -27,5 +28,12 @@ class House extends Model
     public function rooms()
     {
         return $this->hasMany(Room::class, 'houseID');
+    }
+
+    public function tenants()
+    {
+        return $this->belongsToMany(User::class, 'house_tenant', 'houseID', 'userID')
+                    ->where('role', 'tenant')
+                    ->withTimestamps();
     }
 }

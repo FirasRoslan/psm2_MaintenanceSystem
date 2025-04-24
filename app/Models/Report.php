@@ -16,7 +16,12 @@ class Report extends Model
         'itemID',
         'roomID',
         'report_desc',
-        'report_image'
+        'report_image',
+        'report_status'
+    ];
+
+    protected $casts = [
+        'report_status' => 'string'
     ];
 
     public function user()

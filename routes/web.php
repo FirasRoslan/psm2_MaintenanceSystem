@@ -3,6 +3,7 @@
 use App\Http\Controllers\LandlordViewController;
 use App\Http\Controllers\TenantViewController;
 use App\Http\Controllers\ContractorViewController;
+use App\Http\Controllers\TenantController;
 use App\Http\Controllers\PropertyController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
@@ -33,25 +34,41 @@ Route::middleware('role:contractor')->group(function () {
 });
 
 
+// Add these routes if they're not already present
 Route::middleware(['auth', 'role:landlord'])->group(function () {
-    // House routes
-    Route::get('/properties', [PropertyController::class, 'showHouses'])->name('landlord.properties.index');
-    Route::get('/properties/create', [PropertyController::class, 'createHouse'])->name('landlord.properties.create');
-    Route::post('/properties', [PropertyController::class, 'storeHouse'])->name('landlord.properties.store');
-    Route::get('/properties/{house}', [PropertyController::class, 'showHouse'])->name('landlord.properties.show');
-    Route::delete('/properties/{house}', [PropertyController::class, 'deleteHouse'])->name('landlord.properties.delete');
+    Route::prefix('landlord')->name('landlord.')->group(function () {
+        // Properties
+        Route::get('/properties', [PropertyController::class, 'showHouses'])->name('properties.index');
+        Route::get('/properties/create', [PropertyController::class, 'createHouse'])->name('properties.create');
+        Route::post('/properties', [PropertyController::class, 'storeHouse'])->name('properties.store');
+        Route::get('/properties/{house}', [PropertyController::class, 'showHouse'])->name('properties.show');
+        Route::delete('/properties/{house}', [PropertyController::class, 'deleteHouse'])->name('properties.delete');
 
-    // Room routes
-    Route::get('/properties/{house}/rooms/create', [PropertyController::class, 'createRoom'])->name('landlord.properties.rooms.create');
-    Route::post('/properties/{house}/rooms', [PropertyController::class, 'storeRoom'])->name('landlord.properties.rooms.store');
-    Route::delete('/rooms/{room}', [PropertyController::class, 'deleteRoom'])->name('landlord.properties.rooms.delete');
+        // Rooms
+        Route::get('/properties/{house}/rooms/create', [PropertyController::class, 'createRoom'])->name('properties.rooms.create');
+        Route::post('/properties/{house}/rooms', [PropertyController::class, 'storeRoom'])->name('properties.rooms.store');
+        Route::delete('/properties/rooms/{room}', [PropertyController::class, 'deleteRoom'])->name('properties.rooms.delete');
 
-    // Item routes
-    Route::get('/rooms/{room}/items/create', [PropertyController::class, 'createItem'])->name('landlord.properties.items.create');
-    Route::post('/rooms/{room}/items', [PropertyController::class, 'storeItem'])->name('landlord.properties.items.store');
-    Route::delete('/items/{item}', [PropertyController::class, 'deleteItem'])->name('landlord.properties.items.delete');
-    
-    // Add this new route for fetching room items
-    Route::get('/rooms/{room}/items', [PropertyController::class, 'getRoomItems'])->name('landlord.properties.rooms.items');
+        // Items
+        Route::get('/properties/rooms/{room}/items/create', [PropertyController::class, 'createItem'])->name('properties.rooms.items.create');
+        Route::post('/properties/rooms/{room}/items', [PropertyController::class, 'storeItem'])->name('properties.rooms.items.store');
+        Route::delete('/properties/items/{item}', [PropertyController::class, 'deleteItem'])->name('properties.items.delete');
+        Route::get('/properties/rooms/{room}/items', [PropertyController::class, 'getRoomItems'])->name('properties.rooms.items.get');
+        
+        // Tenants
+        Route::get('/tenants', [PropertyController::class, 'showTenants'])->name('tenants.index');
+        Route::get('/tenants/create', [PropertyController::class, 'createTenant'])->name('tenants.create');
+        Route::post('/tenants', [PropertyController::class, 'storeTenant'])->name('tenants.store');
+        Route::get('/tenants/{tenant:userID}', [PropertyController::class, 'showTenant'])->name('tenants.show');
+        Route::get('/tenants/{tenant:userID}/edit', [PropertyController::class, 'editTenant'])->name('tenants.edit');
+        Route::put('/tenants/{tenant:userID}', [PropertyController::class, 'updateTenant'])->name('tenants.update');
+        Route::delete('/tenants/{tenant:userID}', [PropertyController::class, 'deleteTenant'])->name('tenants.delete');
+    });
+});
+
+// Tenant routes
+Route::middleware(['auth', 'tenant'])->prefix('tenant')->name('tenant.')->group(function () {
+    Route::get('/properties/{house}', [TenantController::class, 'showHouse'])->name('properties.show');
+    Route::post('/reports', [TenantController::class, 'storeReport'])->name('reports.store');
 });
 

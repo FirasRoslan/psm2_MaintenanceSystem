@@ -10,6 +10,9 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $primaryKey = 'userID';
+    public $incrementing = true;
+
     protected $fillable = [
         'name',
         'email',
@@ -57,5 +60,11 @@ class User extends Authenticatable
     public function isContractor(): bool
     {
         return $this->role === 'contractor';
+    }
+
+    public function tenantHouses()
+    {
+        return $this->belongsToMany(House::class, 'house_tenant', 'userID', 'houseID')
+                ->withTimestamps();
     }
 }

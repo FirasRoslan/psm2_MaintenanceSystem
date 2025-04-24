@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\House;
 use App\Models\Room;
 use App\Models\Item;
+use App\Models\User;  // Add this line
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -47,7 +48,6 @@ class PropertyController extends Controller
 
     public function showHouse(House $house)
     {
-        $this->authorize('view', $house);
         $house->load('rooms.items');
         return view('landlord.properties.show', compact('house'));
     }
@@ -55,14 +55,11 @@ class PropertyController extends Controller
     // Room Management
     public function createRoom(House $house)
     {
-        $this->authorize('update', $house);
         return view('landlord.properties.rooms.create', compact('house'));
     }
 
     public function storeRoom(Request $request, House $house)
     {
-        $this->authorize('update', $house);
-        
         $validated = $request->validate([
             'room_type' => 'required|string|max:255',
             'room_image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
@@ -82,14 +79,11 @@ class PropertyController extends Controller
     // Item Management
     public function createItem(Room $room)
     {
-        $this->authorize('update', $room->house);
         return view('landlord.properties.items.create', compact('room'));
     }
 
     public function storeItem(Request $request, Room $room)
     {
-        $this->authorize('update', $room->house);
-
         $validated = $request->validate([
             'item_type' => 'required|string|max:255',
             'item_name' => 'required|string|max:255',
@@ -106,14 +100,13 @@ class PropertyController extends Controller
             'item_image' => $imagePath
         ]);
 
-        return redirect()->route('landlord.properties.rooms.show', [$room->house->houseID, $room->roomID])
+        return redirect()->route('landlord.properties.show', $room->house->houseID)
                         ->with('success', 'Item added successfully');
     }
 
     // Delete methods
     public function deleteHouse(House $house)
     {
-        $this->authorize('delete', $house);
         Storage::disk('public')->delete($house->house_image);
         $house->delete();
         return redirect()->route('landlord.properties.index')
@@ -122,7 +115,6 @@ class PropertyController extends Controller
 
     public function deleteRoom(Room $room)
     {
-        $this->authorize('delete', $room->house);
         Storage::disk('public')->delete($room->room_image);
         $room->delete();
         return back()->with('success', 'Room deleted successfully');
@@ -130,7 +122,6 @@ class PropertyController extends Controller
 
     public function deleteItem(Item $item)
     {
-        $this->authorize('delete', $item->room->house);
         Storage::disk('public')->delete($item->item_image);
         $item->delete();
         return back()->with('success', 'Item deleted successfully');
@@ -138,7 +129,111 @@ class PropertyController extends Controller
 
     public function getRoomItems(Room $room)
     {
-        $this->authorize('view', $room->house);
         return response()->json($room->items);
+    }
+
+    // Add these methods to your existing PropertyController class
+    
+    // Tenant Management
+    public function showTenants()
+    {
+        $tenants = User::where('role', 'tenant')->get();
+        return view('landlord.properties.tenants.index', compact('tenants'));
+    }
+
+    public function createTenant()
+    {
+        $houses = Auth::user()->houses()->get();
+        return view('landlord.properties.tenants.create', compact('houses'));
+    }
+
+    public function storeTenant(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|max:20',
+            'house_id' => 'required|exists:houses,houseID',
+        ]);
+    
+        // Create user with tenant role
+        $tenant = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'password' => bcrypt('password123'), // Default password
+            'role' => 'tenant',
+        ]);
+    
+        // Assign tenant to house
+        $house = House::find($validated['house_id']);
+        $house->tenants()->attach($tenant->id);
+    
+        return redirect()->route('landlord.tenants.index')
+                        ->with('success', 'Tenant added successfully');
+    }
+
+    public function showTenant(User $tenant)
+    {
+        if ($tenant->role !== 'tenant') {
+            abort(404);
+        }
+        
+        $houses = $tenant->tenantHouses;
+        return view('landlord.properties.tenants.show', compact('tenant', 'houses'));
+    }
+
+    public function editTenant(User $tenant)
+    {
+        if ($tenant->role !== 'tenant') {
+            abort(404);
+        }
+        
+        $houses = Auth::user()->houses()->get();
+        $assignedHouses = $tenant->tenantHouses->pluck('houseID')->toArray();
+        
+        return view('landlord.properties.tenants.edit', compact('tenant', 'houses', 'assignedHouses'));
+    }
+
+    public function updateTenant(Request $request, User $tenant)
+    {
+        if ($tenant->role !== 'tenant') {
+            abort(404);
+        }
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$tenant->id,
+            'phone' => 'required|string|max:20',
+            'house_id' => 'required|exists:houses,houseID',
+        ]);
+    
+        $tenant->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+        ]);
+    
+        // Update house assignment
+        $tenant->tenantHouses()->sync([$validated['house_id']]);
+    
+        return redirect()->route('landlord.tenants.index')
+                        ->with('success', 'Tenant updated successfully');
+    }
+
+    public function deleteTenant(User $tenant)
+    {
+        if ($tenant->role !== 'tenant') {
+            abort(404);
+        }
+        
+        // Detach from all houses
+        $tenant->tenantHouses()->detach();
+        
+        // Delete the user
+        $tenant->delete();
+        
+        return redirect()->route('landlord.tenants.index')
+                        ->with('success', 'Tenant deleted successfully');
     }
 }

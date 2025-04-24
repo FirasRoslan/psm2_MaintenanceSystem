@@ -17,9 +17,9 @@ class ReportSeeder extends Seeder
         $room = Room::first();
 
         Report::create([
-            'userID' => $tenant->id,
-            'itemID' => $item->itemID,
-            'roomID' => $room->roomID,
+            'userID' => $tenant->userID,  // Changed from id
+            'itemID' => $item->itemID,  // Already correct
+            'roomID' => $room->roomID,  // Already correct
             'report_desc' => 'Broken chair needs repair',
             'report_image' => 'reports/default-report.jpg'
         ]);

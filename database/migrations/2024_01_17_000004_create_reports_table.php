@@ -10,12 +10,17 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id('reportID');
-            $table->foreignId('userID')->constrained('users', 'id');
+            $table->unsignedBigInteger('userID');
             $table->foreignId('itemID')->nullable()->constrained('items', 'itemID');
             $table->foreignId('roomID')->constrained('rooms', 'roomID');
             $table->text('report_desc');
             $table->string('report_image');
             $table->timestamps();
+
+            $table->foreign('userID')
+                  ->references('userID')
+                  ->on('users')
+                  ->onDelete('cascade');
         });
     }
 

@@ -14,7 +14,7 @@ class ItemSeeder extends Seeder
 
         foreach ($rooms as $room) {
             Item::create([
-                'roomID' => $room->roomID,
+                'roomID' => $room->roomID,  // Already correct
                 'item_type' => 'Furniture',
                 'item_name' => 'Chair',
                 'item_quantity' => 2,
