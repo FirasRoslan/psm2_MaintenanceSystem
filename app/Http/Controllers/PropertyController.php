@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\House;
 use App\Models\Room;
 use App\Models\Item;
-use App\Models\User;  // Add this line
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -134,7 +134,7 @@ class PropertyController extends Controller
 
     // Add these methods to your existing PropertyController class
     
-    // Tenant Management
+    // Tenant House Management (changed from Tenant Management)
     public function showTenants()
     {
         $tenants = User::where('role', 'tenant')->get();
@@ -154,6 +154,7 @@ class PropertyController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|max:20',
             'house_id' => 'required|exists:houses,houseID',
+            'approval_status' => 'required|in:active,non active',
         ]);
     
         // Create user with tenant role
@@ -163,14 +164,16 @@ class PropertyController extends Controller
             'phone' => $validated['phone'],
             'password' => bcrypt('password123'), // Default password
             'role' => 'tenant',
+            'approval' => true,
+            'approval_status' => $validated['approval_status']
         ]);
     
-        // Assign tenant to house
+        // Assign tenant to house with approval_status
         $house = House::find($validated['house_id']);
-        $house->tenants()->attach($tenant->id);
+        $house->tenants()->attach($tenant->userID, ['approval_status' => null]); // Set to pending by default
     
         return redirect()->route('landlord.tenants.index')
-                        ->with('success', 'Tenant added successfully');
+                        ->with('success', 'Tenant added and assigned to property successfully');
     }
 
     public function showTenant(User $tenant)
@@ -203,22 +206,35 @@ class PropertyController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$tenant->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$tenant->userID.',userID',
             'phone' => 'required|string|max:20',
             'house_id' => 'required|exists:houses,houseID',
+            'approval_status' => 'required|in:active,non active',
+            'house_approval_status' => 'required|in:approve,reject,pending',
         ]);
     
         $tenant->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
+            'approval_status' => $validated['approval_status'],
         ]);
     
-        // Update house assignment
-        $tenant->tenantHouses()->sync([$validated['house_id']]);
+        // Map the approval status from form to boolean value
+        $houseApprovalStatus = null;
+        if ($validated['house_approval_status'] === 'approve') {
+            $houseApprovalStatus = true;
+        } elseif ($validated['house_approval_status'] === 'reject') {
+            $houseApprovalStatus = false;
+        }
+        
+        // Update house assignment with approval status
+        $tenant->tenantHouses()->sync([
+            $validated['house_id'] => ['approval_status' => $houseApprovalStatus]
+        ]);
     
         return redirect()->route('landlord.tenants.index')
-                        ->with('success', 'Tenant updated successfully');
+                        ->with('success', 'Tenant house assignment updated successfully');
     }
 
     public function deleteTenant(User $tenant)

@@ -34,6 +34,37 @@ class House extends Model
     {
         return $this->belongsToMany(User::class, 'house_tenant', 'houseID', 'userID')
                     ->where('role', 'tenant')
+                    ->withPivot('approval_status')
+                    ->withTimestamps();
+    }
+
+    // Get only approved tenants
+    public function approvedTenants()
+    {
+        return $this->belongsToMany(User::class, 'house_tenant', 'houseID', 'userID')
+                    ->where('role', 'tenant')
+                    ->wherePivot('approval_status', true)
+                    ->withPivot('approval_status')
+                    ->withTimestamps();
+    }
+
+    // Get only pending tenants
+    public function pendingTenants()
+    {
+        return $this->belongsToMany(User::class, 'house_tenant', 'houseID', 'userID')
+                    ->where('role', 'tenant')
+                    ->wherePivot('approval_status', null)
+                    ->withPivot('approval_status')
+                    ->withTimestamps();
+    }
+
+    // Get only rejected tenants
+    public function rejectedTenants()
+    {
+        return $this->belongsToMany(User::class, 'house_tenant', 'houseID', 'userID')
+                    ->where('role', 'tenant')
+                    ->wherePivot('approval_status', false)
+                    ->withPivot('approval_status')
                     ->withTimestamps();
     }
 }

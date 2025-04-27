@@ -1,13 +1,13 @@
 @extends('ui.layout')
 
-@section('title', 'Manage Tenants')
+@section('title', 'Manage Tenant House Assignments')
 
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4>Manage Tenants</h4>
+        <h4>Manage Tenant House Assignments</h4>
         <a href="{{ route('landlord.tenants.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Add Tenant
+            <i class="fas fa-plus me-2"></i>Add Tenant Assignment
         </a>
     </div>
 
@@ -25,10 +25,12 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Tenant Name</th>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Property</th>
+                            <th>Account Status</th>
+                            <th>House Assignment</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -46,6 +48,29 @@
                                 @endif
                             </td>
                             <td>
+                                <span class="badge bg-{{ $tenant->approval_status == 'active' ? 'success' : 'danger' }}">
+                                    {{ ucfirst($tenant->approval_status) }}
+                                </span>
+                            </td>
+                            <td>
+                                @if($tenant->tenantHouses->count() > 0)
+                                    @php
+                                        $pivotData = $tenant->tenantHouses->first()->pivot;
+                                        $status = $pivotData->approval_status;
+                                    @endphp
+                                    
+                                    @if($status === null)
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    @elseif($status === true)
+                                        <span class="badge bg-success">Approved</span>
+                                    @else
+                                        <span class="badge bg-danger">Rejected</span>
+                                    @endif
+                                @else
+                                    <span class="text-muted">N/A</span>
+                                @endif
+                            </td>
+                            <td>
                                 <div class="d-flex gap-2">
                                     <a href="{{ route('landlord.tenants.show', $tenant->userID) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye"></i>
@@ -56,7 +81,7 @@
                                     <form action="{{ route('landlord.tenants.delete', $tenant->userID) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this tenant?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this tenant assignment?')">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -69,11 +94,11 @@
             </div>
             @else
             <div class="text-center py-4">
-                <img src="{{ asset('images/empty.svg') }}" alt="No tenants" class="img-fluid mb-3" style="max-height: 200px;">
-                <h5>No Tenants Found</h5>
-                <p class="text-muted">You haven't added any tenants yet.</p>
+                <img src="{{ asset('images/empty.svg') }}" alt="No tenant assignments" class="img-fluid mb-3" style="max-height: 200px;">
+                <h5>No Tenant House Assignments Found</h5>
+                <p class="text-muted">You haven't added any tenant house assignments yet.</p>
                 <a href="{{ route('landlord.tenants.create') }}" class="btn btn-primary mt-2">
-                    <i class="fas fa-plus me-2"></i>Add Tenant
+                    <i class="fas fa-plus me-2"></i>Add Tenant Assignment
                 </a>
             </div>
             @endif

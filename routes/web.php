@@ -67,8 +67,13 @@ Route::middleware(['auth', 'role:landlord'])->group(function () {
 });
 
 // Tenant routes
-Route::middleware(['auth', 'tenant'])->prefix('tenant')->name('tenant.')->group(function () {
-    Route::get('/properties/{house}', [TenantController::class, 'showHouse'])->name('properties.show');
-    Route::post('/reports', [TenantController::class, 'storeReport'])->name('reports.store');
+Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->group(function () {
+    Route::get('/dashboard', [TenantViewController::class, 'dashboard'])->name('dashboard');
+    Route::get('/find-houses', [TenantViewController::class, 'findHouses'])->name('find-houses');
+    Route::post('/request-house', [TenantViewController::class, 'requestHouse'])->name('request-house');
+    Route::get('/assigned-houses', [TenantViewController::class, 'viewAssignedHouses'])->name('assigned-houses');
 });
+Route::get('/properties/{house}', [TenantController::class, 'showHouse'])->name('properties.show');
+Route::post('/reports', [TenantController::class, 'storeReport'])->name('reports.store');
 
+ 

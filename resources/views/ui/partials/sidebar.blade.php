@@ -16,6 +16,12 @@
             <a href="{{ route('landlord.tenants.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.tenants.*') ? 'active' : '' }}">
                 <i class="fas fa-users me-2"></i> Tenants
             </a>
+            <a href="#" class="sidebar-link mb-2">
+                <i class="fas fa-clipboard-list me-2"></i> Requests
+            </a>
+            <a href="#" class="sidebar-link mb-2">
+                <i class="fas fa-tasks me-2"></i> Tasks
+            </a>
         @elseif(auth()->user()->isTenant())
             <a href="{{ route('tenant.dashboard') }}" class="sidebar-link mb-2 {{ request()->routeIs('tenant.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-home me-2"></i> Dashboard

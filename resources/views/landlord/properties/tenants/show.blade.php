@@ -1,14 +1,14 @@
 @extends('ui.layout')
 
-@section('title', 'Tenant Details')
+@section('title', 'Tenant House Assignment Details')
 
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4>Tenant Details</h4>
+        <h4>Tenant House Assignment Details</h4>
         <div>
-            <a href="{{ route('landlord.tenants.edit', $tenant->id) }}" class="btn btn-outline-primary me-2">
-                <i class="fas fa-edit me-1"></i>Edit
+            <a href="{{ route('landlord.tenants.edit', $tenant->userID) }}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-edit me-1"></i>Edit Assignment
             </a>
             <a href="{{ route('landlord.tenants.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-1"></i>Back
@@ -26,6 +26,9 @@
                         </div>
                         <h5 class="mb-0">{{ $tenant->name }}</h5>
                         <p class="text-muted">Tenant</p>
+                        <span class="badge bg-{{ $tenant->approval_status == 'active' ? 'success' : 'danger' }} px-3 py-2">
+                            {{ ucfirst($tenant->approval_status) }}
+                        </span>
                     </div>
                     
                     <div class="tenant-info">
@@ -89,6 +92,22 @@
                                                 <p class="mb-0">{{ $house->house_number_toilet }}</p>
                                             </div>
                                         </div>
+                                        
+                                        <div class="mb-3">
+                                            <small class="text-muted">Assignment Status</small>
+                                            @php
+                                                $status = $house->pivot->approval_status;
+                                            @endphp
+                                            
+                                            @if($status === null)
+                                                <p class="mb-0"><span class="badge bg-warning text-dark">Pending Approval</span></p>
+                                            @elseif($status === true)
+                                                <p class="mb-0"><span class="badge bg-success">Approved</span></p>
+                                            @else
+                                                <p class="mb-0"><span class="badge bg-danger">Rejected</span></p>
+                                            @endif
+                                        </div>
+                                        
                                         <a href="{{ route('landlord.properties.show', $house->houseID) }}" class="btn btn-sm btn-outline-primary">View Property</a>
                                     </div>
                                 </div>

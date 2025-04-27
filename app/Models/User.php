@@ -16,9 +16,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role',
-        'approval'
+        'approval',
+        'approval_status'
     ];
 
     protected $hidden = [
@@ -65,6 +67,34 @@ class User extends Authenticatable
     public function tenantHouses()
     {
         return $this->belongsToMany(House::class, 'house_tenant', 'userID', 'houseID')
+                ->withPivot('approval_status')
+                ->withTimestamps();
+    }
+
+    // Get only approved houses for tenant
+    public function approvedHouses()
+    {
+        return $this->belongsToMany(House::class, 'house_tenant', 'userID', 'houseID')
+                ->wherePivot('approval_status', true)
+                ->withPivot('approval_status')
+                ->withTimestamps();
+    }
+
+    // Get only pending houses for tenant
+    public function pendingHouses()
+    {
+        return $this->belongsToMany(House::class, 'house_tenant', 'userID', 'houseID')
+                ->wherePivot('approval_status', null)
+                ->withPivot('approval_status')
+                ->withTimestamps();
+    }
+
+    // Get only rejected houses for tenant
+    public function rejectedHouses()
+    {
+        return $this->belongsToMany(House::class, 'house_tenant', 'userID', 'houseID')
+                ->wherePivot('approval_status', false)
+                ->withPivot('approval_status')
                 ->withTimestamps();
     }
 }
