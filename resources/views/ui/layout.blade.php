@@ -8,7 +8,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #0d6efd;
+            --primary-light: #e6f0ff;
+            --primary-dark: #0a58ca;
+            --secondary-color: #2c3e50;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+        
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
             overflow-x: hidden;
         }
 
@@ -19,8 +31,8 @@
             top: 0;
             left: 0;
             transition: all 0.3s;
-            background-color: #f8f9fa;
-            border-right: 1px solid #dee2e6;
+            background-color: var(--light-gray);
+            border-right: 1px solid var(--border-color);
             z-index: 1000;
         }
 
@@ -33,7 +45,7 @@
             transition: all 0.3s;
             margin-left: 250px;
             width: calc(100% - 250px);
-            max-width: 1600px; /* Added max-width */
+            max-width: 1600px;
         }
 
         #content.expanded {
@@ -42,27 +54,80 @@
         }
 
         .content-wrapper {
-            padding: 0 20px; /* Added padding */
-            max-width: 1600px; /* Match content max-width */
-            margin: 0 auto; /* Center the content */
+            padding: 0 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .sidebar-brand {
+            padding: 20px 15px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-brand i {
+            color: var(--primary-color);
+            margin-right: 10px;
+            font-size: 1.6rem;
         }
 
         .sidebar-link {
-            padding: 10px 15px;
-            color: #333;
+            padding: 12px 15px;
+            color: var(--secondary-color);
             display: flex;
             align-items: center;
             text-decoration: none;
             transition: all 0.3s;
+            border-left: 3px solid transparent;
         }
 
         .sidebar-link:hover {
-            background-color: #e9ecef;
-            color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.1);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .sidebar-link.active {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
         }
 
         .sidebar-link i {
             width: 25px;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-header {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+            padding: 15px 15px 5px;
+            margin-top: 10px;
+        }
+        
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            font-weight: 600;
         }
 
         @media (max-width: 768px) {
@@ -84,6 +149,10 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <nav id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-home"></i>
+                Parit Raja Rental
+            </div>
             @include('ui.partials.sidebar')
         </nav>
 
@@ -100,13 +169,26 @@
                         @auth
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                    {{ auth()->user()->name }}
+                                    <i class="fas fa-user-circle me-1"></i> {{ auth()->user()->name }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-user me-2"></i> Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-cog me-2"></i> Settings
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="dropdown-item">Logout</button>
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                            </button>
                                         </form>
                                     </li>
                                 </ul>
