@@ -10,6 +10,24 @@
             <div class="alert alert-info">
                 <i class="fas fa-bell me-2"></i> You have 0 reminders for Today · <a href="#" class="text-primary">View all</a>
             </div>
+            
+            <!-- Tenant request notification - moved inside the content section -->
+            @if($pendingRequestsCount > 0)
+            <div class="alert alert-warning border-0 shadow-sm mt-3">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-user-clock fa-2x text-warning me-3"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">Pending Tenant Requests</h5>
+                        <p class="mb-2">You have {{ $pendingRequestsCount }} pending tenant house assignment request(s).</p>
+                        <a href="{{ route('landlord.tenants.index') }}" class="btn btn-warning btn-sm px-4">
+                            <i class="fas fa-users me-1"></i> View Requests
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 
@@ -31,6 +49,7 @@
         </div>
     </div>
 
+    <!-- Rest of the content remains unchanged -->
     <div class="row">
         <div class="col-md-8 mb-4">
             <div class="card border-0 shadow-sm">
@@ -105,6 +124,24 @@
         background-color: #f0f9ff;
         border-color: #e0f2fe;
         color: #0369a1;
+    }
+    .alert-warning {
+        background-color: #fffbeb;
+        border-color: #fef3c7;
+        color: #92400e;
+    }
+    .btn-warning {
+        background-color: #f59e0b;
+        border-color: #f59e0b;
+        color: white;
+    }
+    .btn-warning:hover {
+        background-color: #d97706;
+        border-color: #d97706;
+        color: white;
+    }
+    .text-warning {
+        color: #f59e0b !important;
     }
 </style>
 @endpush

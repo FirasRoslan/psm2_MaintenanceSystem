@@ -78,9 +78,18 @@
                             <label for="house_approval_status" class="form-label">House Assignment Status</label>
                             <select class="form-select @error('house_approval_status') is-invalid @enderror" 
                                     id="house_approval_status" name="house_approval_status" required>
-                                <option value="pending" {{ old('house_approval_status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="approve" {{ old('house_approval_status') == 'approve' ? 'selected' : '' }}>Approve</option>
-                                <option value="reject" {{ old('house_approval_status') == 'reject' ? 'selected' : '' }}>Reject</option>
+                                <option value="pending" 
+                                    {{ old('house_approval_status', ($tenant->tenantHouses->first() && $tenant->tenantHouses->first()->pivot->approval_status === null) ? 'pending' : '') == 'pending' ? 'selected' : '' }}>
+                                    Pending
+                                </option>
+                                <option value="approve" 
+                                    {{ old('house_approval_status', ($tenant->tenantHouses->first() && $tenant->tenantHouses->first()->pivot->approval_status === true) ? 'approve' : '') == 'approve' ? 'selected' : '' }}>
+                                    Approve
+                                </option>
+                                <option value="reject" 
+                                    {{ old('house_approval_status', ($tenant->tenantHouses->first() && $tenant->tenantHouses->first()->pivot->approval_status === false) ? 'reject' : '') == 'reject' ? 'selected' : '' }}>
+                                    Reject
+                                </option>
                             </select>
                             @error('house_approval_status')
                                 <div class="invalid-feedback">{{ $message }}</div>

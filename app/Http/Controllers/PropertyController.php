@@ -12,15 +12,47 @@ use Illuminate\Support\Facades\Storage;
 
 class PropertyController extends Controller
 {
+    public function __construct()
+    {
+        // We'll handle authorization in each method instead of using middleware here
+    }
+
+    // Helper method to check ownership
+    private function checkOwnership($model, $modelType)
+    {
+        if (!$model) return false;
+        
+        switch ($modelType) {
+            case 'house':
+                return $model->userID === Auth::id();
+            case 'room':
+                return $model->house->userID === Auth::id();
+            case 'item':
+                return $model->room->house->userID === Auth::id();
+            default:
+                return false;
+        }
+    }
+
     // House Management
     public function showHouses()
     {
+        // Ensure user is authenticated and is a landlord
+        if (!Auth::check() || Auth::user()->role !== 'landlord') {
+            abort(403, 'Unauthorized action.');
+        }
+        
         $houses = Auth::user()->houses()->with('rooms')->get();
         return view('landlord.properties.index', compact('houses'));
     }
 
     public function createHouse()
     {
+        // Ensure user is authenticated and is a landlord
+        if (!Auth::check() || Auth::user()->role !== 'landlord') {
+            abort(403, 'Unauthorized action.');
+        }
+        
         return view('landlord.properties.create');
     }
 
@@ -48,6 +80,16 @@ class PropertyController extends Controller
 
     public function showHouse(House $house)
     {
+        // Ensure user is authenticated and is a landlord
+        if (!Auth::check() || Auth::user()->role !== 'landlord') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Check if the house belongs to the logged-in landlord
+        if (!$this->checkOwnership($house, 'house')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
         $house->load('rooms.items');
         return view('landlord.properties.show', compact('house'));
     }
@@ -55,6 +97,16 @@ class PropertyController extends Controller
     // Room Management
     public function createRoom(House $house)
     {
+        // Ensure user is authenticated and is a landlord
+        if (!Auth::check() || Auth::user()->role !== 'landlord') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Check if the house belongs to the logged-in landlord
+        if (!$this->checkOwnership($house, 'house')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
         return view('landlord.properties.rooms.create', compact('house'));
     }
 
@@ -79,6 +131,16 @@ class PropertyController extends Controller
     // Item Management
     public function createItem(Room $room)
     {
+        // Ensure user is authenticated and is a landlord
+        if (!Auth::check() || Auth::user()->role !== 'landlord') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Check if the room belongs to the logged-in landlord
+        if (!$this->checkOwnership($room, 'room')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
         return view('landlord.properties.items.create', compact('room'));
     }
 
@@ -135,75 +197,93 @@ class PropertyController extends Controller
     // Add these methods to your existing PropertyController class
     
     // Tenant House Management (changed from Tenant Management)
+    // In the showTenants method, update the query to specify the table for userID
     public function showTenants()
     {
-        $tenants = User::where('role', 'tenant')->get();
+        // Get all tenants associated with the landlord's houses
+        // This includes tenants with pending, approved, and rejected requests
+        $tenants = User::where('role', 'tenant')
+            ->whereHas('tenantHouses', function($query) {
+                $query->where('houses.userID', Auth::id());
+            })
+            ->with(['tenantHouses' => function($query) {
+                $query->where('houses.userID', Auth::id());
+            }])
+            ->get();
+            
         return view('landlord.properties.tenants.index', compact('tenants'));
     }
 
-    public function createTenant()
-    {
-        $houses = Auth::user()->houses()->get();
-        return view('landlord.properties.tenants.create', compact('houses'));
-    }
-
-    public function storeTenant(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'phone' => 'required|string|max:20',
-            'house_id' => 'required|exists:houses,houseID',
-            'approval_status' => 'required|in:active,non active',
-        ]);
-    
-        // Create user with tenant role
-        $tenant = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'password' => bcrypt('password123'), // Default password
-            'role' => 'tenant',
-            'approval' => true,
-            'approval_status' => $validated['approval_status']
-        ]);
-    
-        // Assign tenant to house with approval_status
-        $house = House::find($validated['house_id']);
-        $house->tenants()->attach($tenant->userID, ['approval_status' => null]); // Set to pending by default
-    
-        return redirect()->route('landlord.tenants.index')
-                        ->with('success', 'Tenant added and assigned to property successfully');
-    }
-
+    // Update the showTenant method
     public function showTenant(User $tenant)
     {
         if ($tenant->role !== 'tenant') {
             abort(404);
         }
         
-        $houses = $tenant->tenantHouses;
+        // Check if tenant is associated with any of the landlord's houses
+        $hasAccess = $tenant->tenantHouses()
+            ->where('houses.userID', Auth::id())  // Specify the table name
+            ->exists();
+            
+        if (!$hasAccess) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Only get houses that belong to the current landlord
+        $houses = $tenant->tenantHouses()
+            ->where('houses.userID', Auth::id())  // Specify the table name
+            ->get();
+            
         return view('landlord.properties.tenants.show', compact('tenant', 'houses'));
     }
 
+    // Update the editTenant method
     public function editTenant(User $tenant)
     {
         if ($tenant->role !== 'tenant') {
             abort(404);
         }
         
+        // Check if tenant is associated with any of the landlord's houses
+        $hasAccess = $tenant->tenantHouses()
+            ->where('houses.userID', Auth::id())  // Specify the table name
+            ->exists();
+            
+        if (!$hasAccess) {
+            abort(403, 'Unauthorized action.');
+        }
+        
         $houses = Auth::user()->houses()->get();
-        $assignedHouses = $tenant->tenantHouses->pluck('houseID')->toArray();
+        
+        // For the collection, we need to filter after retrieving
+        $assignedHouses = $tenant->tenantHouses
+            ->filter(function($house) {
+                return $house->userID === Auth::id();
+            })
+            ->pluck('houseID')
+            ->toArray();
         
         return view('landlord.properties.tenants.edit', compact('tenant', 'houses', 'assignedHouses'));
     }
 
+    // Update the updateTenant method
     public function updateTenant(Request $request, User $tenant)
     {
         if ($tenant->role !== 'tenant') {
             abort(404);
         }
         
+        // Check if tenant is associated with any of the landlord's houses
+        $hasAccess = $tenant->tenantHouses()
+            ->where('houses.userID', Auth::id())  // Specify the table name
+            ->exists();
+            
+        if (!$hasAccess) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$tenant->userID.',userID',
@@ -212,7 +292,14 @@ class PropertyController extends Controller
             'approval_status' => 'required|in:active,non active',
             'house_approval_status' => 'required|in:approve,reject,pending',
         ]);
+        
+        // Check if the house belongs to the landlord
+        $house = House::find($validated['house_id']);
+        if ($house->userID !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
     
+        // Update tenant information
         $tenant->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -220,8 +307,8 @@ class PropertyController extends Controller
             'approval_status' => $validated['approval_status'],
         ]);
     
-        // Map the approval status from form to boolean value
-        $houseApprovalStatus = null;
+        // Map the approval status from form to database value
+        $houseApprovalStatus = null; // Default is pending
         if ($validated['house_approval_status'] === 'approve') {
             $houseApprovalStatus = true;
         } elseif ($validated['house_approval_status'] === 'reject') {
@@ -229,27 +316,87 @@ class PropertyController extends Controller
         }
         
         // Update house assignment with approval status
-        $tenant->tenantHouses()->sync([
+        $tenant->tenantHouses()->syncWithoutDetaching([
             $validated['house_id'] => ['approval_status' => $houseApprovalStatus]
         ]);
     
-        return redirect()->route('landlord.tenants.index')
-                        ->with('success', 'Tenant house assignment updated successfully');
+        // Redirect to the tenant page
+        return redirect()->route('landlord.tenants.show', $tenant->userID)
+                        ->with('success', 'Tenant information and house assignment updated successfully');
     }
 
+    // Update the deleteTenant method
     public function deleteTenant(User $tenant)
     {
         if ($tenant->role !== 'tenant') {
             abort(404);
         }
         
-        // Detach from all houses
-        $tenant->tenantHouses()->detach();
+        // Check if tenant is associated with any of the landlord's houses
+        $hasAccess = $tenant->tenantHouses()
+            ->where('houses.userID', Auth::id())  // Specify the table name
+            ->exists();
+            
+        if (!$hasAccess) {
+            abort(403, 'Unauthorized action.');
+        }
         
-        // Delete the user
-        $tenant->delete();
+        // Only detach houses that belong to the current landlord
+        $tenant->tenantHouses()
+            ->where('houses.userID', Auth::id())
+            ->detach();
+            
+        return redirect()->route('landlord.tenants.index')
+            ->with('success', 'Tenant house assignment has been removed successfully');
+    }
+    
+    // Add these methods after your existing tenant-related methods
+    
+    public function createTenant()
+    {
+        // Ensure user is authenticated and is a landlord
+        if (!Auth::check() || Auth::user()->role !== 'landlord') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $houses = Auth::user()->houses()->get();
+        return view('landlord.properties.tenants.create', compact('houses'));
+    }
+
+    public function storeTenant(Request $request)
+    {
+        // Ensure user is authenticated and is a landlord
+        if (!Auth::check() || Auth::user()->role !== 'landlord') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'phone' => 'required|string|max:20',
+            'house_id' => 'required|exists:houses,houseID',
+        ]);
+        
+        // Check if the house belongs to the landlord
+        $house = House::find($validated['house_id']);
+        if ($house->userID !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Create the tenant user
+        $tenant = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'password' => bcrypt('password123'), // Default password, tenant should change it
+            'role' => 'tenant',
+            'approval_status' => 'active',
+        ]);
+        
+        // Assign tenant to house with pending approval status
+        $tenant->tenantHouses()->attach($validated['house_id'], ['approval_status' => null]);
         
         return redirect()->route('landlord.tenants.index')
-                        ->with('success', 'Tenant deleted successfully');
+                        ->with('success', 'Tenant added successfully. Default password is "password123".');
     }
 }

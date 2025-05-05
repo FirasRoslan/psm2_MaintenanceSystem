@@ -68,4 +68,21 @@ class TenantViewController extends Controller
         
         return view('tenant.assigned-houses', compact('houses'));
     }
+    
+    // We need to add or update a method to show property details for tenants
+    public function showProperty(House $house)
+    {
+        // Check if the tenant is assigned to this house
+        $user = Auth::user();
+        $isAssigned = $user->tenantHouses()->where('houseID', $house->houseID)->exists();
+        
+        if (!$isAssigned) {
+            abort(403, 'You are not assigned to this property.');
+        }
+        
+        // Load the house with its rooms and items
+        $house->load('rooms.items');
+        
+        return view('tenant.properties.show', compact('house'));
+    }
 }

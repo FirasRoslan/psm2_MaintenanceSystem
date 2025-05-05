@@ -49,17 +49,17 @@ class User extends Authenticatable
         return $this->hasMany(Task::class, 'userID');
     }
 
-    public function isLandlord(): bool
+    public function isLandlord()
     {
         return $this->role === 'landlord';
     }
 
-    public function isTenant(): bool
+    public function isTenant()
     {
         return $this->role === 'tenant';
     }
 
-    public function isContractor(): bool
+    public function isContractor()
     {
         return $this->role === 'contractor';
     }

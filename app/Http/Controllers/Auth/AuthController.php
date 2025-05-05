@@ -65,6 +65,16 @@ class AuthController extends Controller
 
         Auth::login($user);
 
+        // Redirect based on user role
+        if ($user->isLandlord()) {
+            return redirect()->route('landlord.dashboard');
+        } elseif ($user->isTenant()) {
+            return redirect()->route('tenant.dashboard');
+        } elseif ($user->isContractor()) {
+            return redirect()->route('contractor.dashboard');
+        }
+
+        // Fallback redirect
         return redirect('/dashboard');
     }
 
