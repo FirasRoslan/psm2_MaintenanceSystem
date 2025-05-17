@@ -267,37 +267,18 @@ class PropertyController extends Controller
         return view('landlord.properties.tenants.edit', compact('tenant', 'houses', 'assignedHouses'));
     }
 
-    // Update the updateTenant method
+    // Update the updateTenant method to properly handle the approval status
     public function updateTenant(Request $request, User $tenant)
     {
-        if ($tenant->role !== 'tenant') {
-            abort(404);
-        }
-        
-        // Check if tenant is associated with any of the landlord's houses
-        $hasAccess = $tenant->tenantHouses()
-            ->where('houses.userID', Auth::id())  // Specify the table name
-            ->exists();
-            
-        if (!$hasAccess) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        // Validate the request
+        // Validate request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$tenant->userID.',userID',
+            'email' => 'required|email|max:255|unique:users,email,' . $tenant->userID . ',userID',
             'phone' => 'required|string|max:20',
-            'house_id' => 'required|exists:houses,houseID',
             'approval_status' => 'required|in:active,non active',
-            'house_approval_status' => 'required|in:approve,reject,pending',
+            'house_id' => 'required|exists:houses,houseID',
+            'assignment_status' => 'required|in:approve,reject,pending',
         ]);
-        
-        // Check if the house belongs to the landlord
-        $house = House::find($validated['house_id']);
-        if ($house->userID !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
     
         // Update tenant information
         $tenant->update([
@@ -307,22 +288,30 @@ class PropertyController extends Controller
             'approval_status' => $validated['approval_status'],
         ]);
     
-        // Map the approval status from form to database value
-        $houseApprovalStatus = null; // Default is pending
-        if ($validated['house_approval_status'] === 'approve') {
-            $houseApprovalStatus = true;
-        } elseif ($validated['house_approval_status'] === 'reject') {
-            $houseApprovalStatus = false;
+        // Get the house
+        $house = House::findOrFail($validated['house_id']);
+    
+        // Check if the house belongs to the current landlord
+        if ($house->userID !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
-        
-        // Update house assignment with approval status
+    
+        // Update the pivot table with the correct approval status
+        // Convert the string status to the appropriate boolean value
+        $approvalStatus = null;
+        if ($validated['assignment_status'] === 'approve') {
+            $approvalStatus = true;
+        } elseif ($validated['assignment_status'] === 'reject') {
+            $approvalStatus = false;
+        } // 'pending' remains null
+    
+        // Update the pivot table
         $tenant->tenantHouses()->syncWithoutDetaching([
-            $validated['house_id'] => ['approval_status' => $houseApprovalStatus]
+            $validated['house_id'] => ['approval_status' => $approvalStatus]
         ]);
     
-        // Redirect to the tenant page
-        return redirect()->route('landlord.tenants.show', $tenant->userID)
-                        ->with('success', 'Tenant information and house assignment updated successfully');
+        return redirect()->route('landlord.tenants.index')
+            ->with('success', 'Tenant house assignment has been updated successfully');
     }
 
     // Update the deleteTenant method

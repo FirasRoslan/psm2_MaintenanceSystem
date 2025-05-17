@@ -40,6 +40,7 @@ class TenantViewController extends Controller
         $houseID = $request->houseID;
         
         // Check if tenant already has a pending or approved request for this house
+        // Specify the table name to avoid ambiguity
         $existingRequest = HouseTenant::where('userID', $user->userID)
             ->where('houseID', $houseID)
             ->first();
@@ -74,7 +75,9 @@ class TenantViewController extends Controller
     {
         // Check if the tenant is assigned to this house
         $user = Auth::user();
-        $isAssigned = $user->tenantHouses()->where('houseID', $house->houseID)->exists();
+        
+        // This is the correct version - use this one and remove the problematic line
+        $isAssigned = $user->tenantHouses()->where('houses.houseID', $house->houseID)->exists();
         
         if (!$isAssigned) {
             abort(403, 'You are not assigned to this property.');

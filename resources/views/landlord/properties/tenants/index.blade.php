@@ -83,6 +83,7 @@
                                     {{ ucfirst($tenant->approval_status) }}
                                 </span>
                             </td>
+                            <!-- Update the assignment status display in the index table -->
                             <td>
                                 @if($tenant->tenantHouses->count() > 0)
                                     @php
@@ -90,7 +91,7 @@
                                     @endphp
                                     @if($pivotData->approval_status === null)
                                         <span class="badge rounded-pill bg-warning text-dark px-3 py-2">Pending</span>
-                                    @elseif($pivotData->approval_status === true)
+                                    @elseif($pivotData->approval_status == 1)
                                         <span class="badge rounded-pill bg-success px-3 py-2">Approved</span>
                                     @else
                                         <span class="badge rounded-pill bg-danger px-3 py-2">Rejected</span>

@@ -74,6 +74,37 @@
                             @enderror
                         </div>
                         
+                        <!-- Update the assignment status dropdown in the edit form -->
+                        <div class="mb-4">
+                            <label for="assignment_status" class="form-label">Assignment Status</label>
+                            <select class="form-select @error('assignment_status') is-invalid @enderror" 
+                                    id="assignment_status" name="assignment_status" required>
+                                @php
+                                    $currentStatus = 'pending';
+                                    if ($tenant->tenantHouses->count() > 0) {
+                                        $pivotStatus = $tenant->tenantHouses->first()->pivot->approval_status;
+                                        if ($pivotStatus === true) {
+                                            $currentStatus = 'approve';
+                                        } elseif ($pivotStatus === false) {
+                                            $currentStatus = 'reject';
+                                        }
+                                    }
+                                @endphp
+                                <option value="pending" {{ old('assignment_status', $currentStatus) == 'pending' ? 'selected' : '' }}>
+                                    Pending
+                                </option>
+                                <option value="approve" {{ old('assignment_status', $currentStatus) == 'approve' ? 'selected' : '' }}>
+                                    Approve
+                                </option>
+                                <option value="reject" {{ old('assignment_status', $currentStatus) == 'reject' ? 'selected' : '' }}>
+                                    Reject
+                                </option>
+                            </select>
+                            @error('assignment_status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        
                         <div class="mb-4">
                             <label for="house_approval_status" class="form-label">House Assignment Status</label>
                             <select class="form-select @error('house_approval_status') is-invalid @enderror" 
