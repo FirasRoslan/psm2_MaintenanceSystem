@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\House;
 use App\Models\HouseTenant;
 use App\Models\User;
+use App\Models\Room;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TenantViewController extends Controller
 {
@@ -19,7 +22,10 @@ class TenantViewController extends Controller
         $approvedHouses = $user->approvedHouses()->with('user')->get();
         $rejectedHouses = $user->rejectedHouses()->with('user')->get();
         
-        return view('tenant.dashboard', compact('pendingHouses', 'approvedHouses', 'rejectedHouses'));
+        // Get recent reports
+        $recentReports = $user->reports()->with(['room.house', 'item'])->latest()->take(5)->get();
+        
+        return view('tenant.dashboard', compact('pendingHouses', 'approvedHouses', 'rejectedHouses', 'recentReports'));
     }
     
     public function findHouses()
@@ -40,7 +46,6 @@ class TenantViewController extends Controller
         $houseID = $request->houseID;
         
         // Check if tenant already has a pending or approved request for this house
-        // Specify the table name to avoid ambiguity
         $existingRequest = HouseTenant::where('userID', $user->userID)
             ->where('houseID', $houseID)
             ->first();
@@ -60,23 +65,12 @@ class TenantViewController extends Controller
             ->with('success', 'Your request has been submitted and is pending approval from the landlord.');
     }
     
-    public function viewAssignedHouses()
-    {
-        $user = Auth::user();
-        
-        // Get all houses assigned to the tenant with their approval status
-        $houses = $user->tenantHouses()->with('user')->get();
-        
-        return view('tenant.assigned-houses', compact('houses'));
-    }
-    
-    // We need to add or update a method to show property details for tenants
     public function showProperty(House $house)
     {
         // Check if the tenant is assigned to this house
         $user = Auth::user();
         
-        // This is the correct version - use this one and remove the problematic line
+        // Use the correct query to avoid ambiguous column name
         $isAssigned = $user->tenantHouses()->where('houses.houseID', $house->houseID)->exists();
         
         if (!$isAssigned) {
@@ -87,5 +81,68 @@ class TenantViewController extends Controller
         $house->load('rooms.items');
         
         return view('tenant.properties.show', compact('house'));
+    }
+    
+    public function getRoomItems(Room $room)
+    {
+        // Check if the tenant is assigned to the house that contains this room
+        $user = Auth::user();
+        $isAssigned = $user->tenantHouses()
+            ->where('houses.houseID', $room->houseID)
+            ->exists();
+            
+        if (!$isAssigned) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        return response()->json($room->items);
+    }
+    
+    public function storeReport(Request $request)
+    {
+        $validated = $request->validate([
+            'roomID' => 'required|exists:rooms,roomID',
+            'itemID' => 'required|exists:items,itemID',
+            'report_desc' => 'required|string',
+            'report_image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+        
+        // Get the room and check if tenant is assigned to the house
+        $room = Room::findOrFail($validated['roomID']);
+        $user = Auth::user();
+        
+        $isAssigned = $user->tenantHouses()
+            ->where('houses.houseID', $room->houseID)
+            ->exists();
+            
+        if (!$isAssigned) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        // Store the image
+        $imagePath = $request->file('report_image')->store('reports', 'public');
+        
+        // Create the report
+        $report = Report::create([
+            'userID' => $user->userID,
+            'roomID' => $validated['roomID'],
+            'itemID' => $validated['itemID'],
+            'report_desc' => $validated['report_desc'],
+            'report_image' => $imagePath,
+            'report_status' => 'Pending'
+        ]);
+        
+        return redirect()->back()->with('success', 'Maintenance report submitted successfully. The landlord will review it soon.');
+    }
+    
+    // Add this method to your TenantViewController class
+    public function reports()
+    {
+        $reports = Report::where('userID', auth()->id())
+                    ->with(['room.house', 'item'])
+                    ->latest()
+                    ->get();
+        
+        return view('tenant.reports.index', compact('reports'));
     }
 }

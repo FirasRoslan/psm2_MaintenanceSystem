@@ -7,26 +7,29 @@
     </div>
     @auth
         @if(auth()->user()->isLandlord())
-            <a href="{{ route('landlord.dashboard') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.dashboard') ? 'active' : '' }}">
-                <i class="fas fa-home me-2"></i> Dashboard
-            </a>
-            <a href="{{ route('landlord.properties.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.properties.*') ? 'active' : '' }}">
-                <i class="fas fa-building me-2"></i> Properties
-            </a>
-            <a href="{{ route('landlord.tenants.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.tenants.*') ? 'active' : '' }}">
-                <i class="fas fa-users me-2"></i> Tenants
-            </a>
-            <a href="#" class="sidebar-link mb-2">
-                <i class="fas fa-clipboard-list me-2"></i> Requests
-            </a>
-            <a href="#" class="sidebar-link mb-2">
-                <i class="fas fa-tasks me-2"></i> Tasks
-            </a>
+            <!-- Inside the landlord section of your sidebar -->
+            @if(auth()->user()->isLandlord())
+                <a href="{{ route('landlord.dashboard') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-home me-2"></i> Dashboard
+                </a>
+                <a href="{{ route('landlord.properties.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.properties.*') ? 'active' : '' }}">
+                    <i class="fas fa-building me-2"></i> Properties
+                </a>
+                <a href="{{ route('landlord.tenants.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.tenants.*') ? 'active' : '' }}">
+                    <i class="fas fa-users me-2"></i> Tenants
+                </a>
+                <a href="{{ route('landlord.requests.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.requests.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list me-2"></i> Requests
+                </a>
+                <a href="#" class="sidebar-link mb-2">
+                    <i class="fas fa-tasks me-2"></i> Tasks
+                </a>
+            @endif
         @elseif(auth()->user()->isTenant())
             <a href="{{ route('tenant.dashboard') }}" class="sidebar-link mb-2 {{ request()->routeIs('tenant.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-home me-2"></i> Dashboard
             </a>
-            <a href="#" class="sidebar-link mb-2">
+            <a href="{{ route('tenant.reports.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('tenant.reports.*') ? 'active' : '' }}">
                 <i class="fas fa-file-alt me-2"></i> Reports
             </a>
         @elseif(auth()->user()->isContractor())

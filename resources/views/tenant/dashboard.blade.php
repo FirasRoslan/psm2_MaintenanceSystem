@@ -3,15 +3,42 @@
 @section('title', 'Tenant Dashboard')
 
 @section('content')
-<div class="container">
+<div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <h1 class="mb-4">Tenant Dashboard</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-1">Tenant Dashboard</h4>
+                    <p class="text-muted mb-0">Welcome back, {{ auth()->user()->name }}</p>
+                </div>
+            </div>
             
             @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
+            <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-check-circle fa-lg"></i>
+                    </div>
+                    <div>
+                        <strong>Success!</strong> {{ session('success') }}
+                    </div>
                 </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            
+            @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-check-circle fa-lg"></i>
+                    </div>
+                    <div>
+                        <strong>Success!</strong> {{ session('success') }}
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             @endif
             
             @if(session('error'))
@@ -136,6 +163,9 @@
             <div class="text-center mt-4">
                 <a href="{{ route('tenant.find-houses') }}" class="btn btn-primary">
                     <i class="fas fa-search"></i> Find More Properties
+                </a>
+                <a href="{{ route('tenant.reports.index') }}" class="btn btn-info ms-2">
+                    <i class="fas fa-tools"></i> View Maintenance Reports
                 </a>
             </div>
         </div>

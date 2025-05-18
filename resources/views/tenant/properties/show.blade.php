@@ -9,10 +9,24 @@
             <h4 class="mb-1">{{ $house->house_address }}</h4>
             <p class="text-muted mb-0">Property Details</p>
         </div>
-        <a href="{{ route('tenant.dashboard') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to My Properties
         </a>
     </div>
+
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+        <div class="d-flex">
+            <div class="me-3">
+                <i class="fas fa-check-circle fa-lg"></i>
+            </div>
+            <div>
+                <strong>Success!</strong> {{ session('success') }}
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
 
     <div class="row">
         <div class="col-md-4 mb-4">
@@ -38,6 +52,17 @@
                             <span class="text-muted">{{ $house->user->name }}</span>
                         </li>
                     </ul>
+                </div>
+            </div>
+            
+            <!-- Maintenance Report Button -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Maintenance Report</h5>
+                    <p class="text-muted">Report any issues with the property</p>
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        <i class="fas fa-tools me-2"></i>Submit Maintenance Report
+                    </button>
                 </div>
             </div>
         </div>
@@ -103,6 +128,59 @@
     </div>
 </div>
 
+<!-- Maintenance Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Submit Maintenance Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('tenant.reports.store') }}" method="POST" enctype="multipart/form-data" id="reportForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="roomID" class="form-label">Select Room</label>
+                        <select class="form-select" id="roomID" name="roomID" required>
+                            <option value="">Select a room</option>
+                            @foreach($house->rooms as $room)
+                                <option value="{{ $room->roomID }}">{{ $room->room_type }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="itemID" class="form-label">Select Item</label>
+                        <select class="form-select" id="itemID" name="itemID" required disabled>
+                            <option value="">Select a room first</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="report_desc" class="form-label">Problem Description</label>
+                        <textarea class="form-control" id="report_desc" name="report_desc" rows="4" required placeholder="Describe the issue in detail..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="report_image" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="report_image" name="report_image" accept="image/*" required>
+                        <div class="form-text">Upload a clear image of the issue (JPEG, PNG, JPG only, max 2MB)</div>
+                    </div>
+                    
+                    <div id="imagePreview" class="mt-3 d-none">
+                        <h6>Image Preview</h6>
+                        <img src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitReport">Submit Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -127,7 +205,7 @@
                 `;
                 
                 // Fetch items for the room
-                fetch(`/landlord/properties/rooms/${roomId}/items`)
+                fetch(`/tenant/properties/rooms/${roomId}/items`)
                     .then(response => response.json())
                     .then(items => {
                         let html = '';
@@ -172,7 +250,71 @@
                     });
             });
         });
+        
+        // Handle room selection for maintenance report
+        const roomSelect = document.getElementById('roomID');
+        const itemSelect = document.getElementById('itemID');
+        
+        roomSelect.addEventListener('change', function() {
+            const roomId = this.value;
+            
+            if (roomId) {
+                // Enable item select
+                itemSelect.disabled = false;
+                itemSelect.innerHTML = '<option value="">Loading items...</option>';
+                
+                // Fetch items for the selected room
+                fetch(`/tenant/properties/rooms/${roomId}/items`)
+                    .then(response => response.json())
+                    .then(items => {
+                        let options = '<option value="">Select an item</option>';
+                        
+                        if (items.length > 0) {
+                            items.forEach(item => {
+                                options += `<option value="${item.itemID}">${item.item_name} (${item.item_type})</option>`;
+                            });
+                        } else {
+                            options = '<option value="">No items available</option>';
+                        }
+                        
+                        itemSelect.innerHTML = options;
+                    })
+                    .catch(error => {
+                        itemSelect.innerHTML = '<option value="">Error loading items</option>';
+                        console.error('Error fetching items:', error);
+                    });
+            } else {
+                // Disable item select if no room is selected
+                itemSelect.disabled = true;
+                itemSelect.innerHTML = '<option value="">Select a room first</option>';
+            }
+        });
+        
+        // Image preview
+        const imageInput = document.getElementById('report_image');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.classList.remove('d-none');
+                    imagePreview.querySelector('img').src = e.target.result;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                imagePreview.classList.add('d-none');
+            }
+        });
+        
+        // Submit report form
+        document.getElementById('submitReport').addEventListener('click', function() {
+            document.getElementById('reportForm').submit();
+        });
     });
 </script>
 @endpush
+
 @endsection

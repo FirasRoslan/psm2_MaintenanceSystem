@@ -23,10 +23,25 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Protected routes with role middleware
 Route::middleware('role:landlord')->group(function () {
     Route::get('/landlord/dashboard', [LandlordViewController::class, 'dashboard'])->name('landlord.dashboard');
+    
+    // Add this route for maintenance requests
+    // Inside your landlord middleware group
+    Route::middleware('role:landlord')->group(function () {
+        // Existing routes...
+        
+        // Maintenance request routes
+        Route::get('/landlord/requests', [LandlordViewController::class, 'maintenanceRequests'])->name('landlord.requests.index');
+        Route::put('/landlord/requests/{report}/status', [LandlordViewController::class, 'updateRequestStatus'])->name('landlord.requests.update-status');
+        Route::get('/landlord/requests/{report}/assign', [LandlordViewController::class, 'showAssignTaskForm'])->name('landlord.requests.assign-task');
+        Route::post('/landlord/requests/{report}/assign', [LandlordViewController::class, 'assignTask'])->name('landlord.requests.store-task');
+    });
 });
 
 Route::middleware('role:tenant')->group(function () {
     Route::get('/tenant/dashboard', [TenantViewController::class, 'dashboard'])->name('tenant.dashboard');
+    
+    // Add this route for reports
+    Route::get('/tenant/reports', [TenantViewController::class, 'reports'])->name('tenant.reports.index');
 });
 
 Route::middleware('role:contractor')->group(function () {
@@ -66,7 +81,7 @@ Route::middleware(['auth', 'role:landlord'])->prefix('landlord')->name('landlord
 });
 
 // Tenant routes
-// Add this to your tenant routes group
+// Inside the tenant routes group
 Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->group(function () {
     Route::get('/dashboard', [TenantViewController::class, 'dashboard'])->name('dashboard');
     Route::get('/find-houses', [TenantViewController::class, 'findHouses'])->name('find-houses');
@@ -75,7 +90,11 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     
     // Properties routes
     Route::get('/properties/{house}', [TenantViewController::class, 'showProperty'])->name('properties.show');
+    
+    // Reports
     Route::post('/reports', [TenantController::class, 'storeReport'])->name('reports.store');
+    Route::get('/reports', [TenantController::class, 'showReports'])->name('reports.index');
+    Route::get('/properties/rooms/{room}/items', [TenantController::class, 'getRoomItems'])->name('properties.rooms.items');
 }); // Added the missing closing brace here
 
 // Add this route for general dashboard redirection
