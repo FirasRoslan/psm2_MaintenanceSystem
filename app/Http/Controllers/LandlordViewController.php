@@ -6,6 +6,7 @@ use App\Models\HouseTenant;
 use App\Models\Report;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\ContractorLandlord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,12 @@ class LandlordViewController extends Controller
         ->whereNull('approval_status')
         ->count();
         
-        return view('landlord.dashboard', compact('pendingRequestsCount'));
+        // Get count of pending contractor requests
+        $pendingContractorCount = ContractorLandlord::where('landlordID', Auth::id())
+            ->whereNull('approval_status')
+            ->count();
+        
+        return view('landlord.dashboard', compact('pendingRequestsCount', 'pendingContractorCount'));
     }
     
     public function maintenanceRequests()
@@ -107,15 +113,49 @@ class LandlordViewController extends Controller
             ->with('success', 'Task assigned successfully to contractor.');
     }
     
-    public function contractorRequests()
+    /**
+     * Display a listing of contractor requests and approved contractors.
+     */
+    public function viewContractors()
     {
         $user = Auth::user();
-        $pendingRequests = $user->pendingContractorRequests()->get();
         $approvedContractors = $user->approvedContractors()->get();
+        $pendingRequests = $user->pendingContractorRequests()->get();
         
-        return view('landlord.contractors.index', compact('pendingRequests', 'approvedContractors'));
+        return view('landlord.contractors.index', compact('approvedContractors', 'pendingRequests'));
     }
     
+    /**
+     * Display details of a specific contractor.
+     */
+    public function showContractor($contractorID)
+    {
+        $user = Auth::user();
+        $contractor = User::where('userID', $contractorID)
+            ->where('role', 'contractor')
+            ->firstOrFail();
+        
+        // Check if this contractor is approved by the landlord
+        $relationship = ContractorLandlord::where('landlordID', $user->userID)
+            ->where('contractorID', $contractor->userID)
+            ->where('approval_status', true)
+            ->firstOrFail();
+        
+        // Get tasks assigned to this contractor
+        $tasks = Task::whereHas('report.room.house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->where('userID', $contractor->userID)
+        ->with(['report.room.house', 'report.item'])
+        ->latest()
+        ->get();
+        
+        return view('landlord.contractors.show', compact('contractor', 'relationship', 'tasks'));
+    }
+    
+    /**
+     * Approve a contractor request.
+     */
     public function approveContractor(Request $request, $contractorID)
     {
         $user = Auth::user();
@@ -135,7 +175,10 @@ class LandlordViewController extends Controller
         
         return back()->with('success', 'Contractor has been approved successfully.');
     }
-    
+
+    /**
+     * Reject a contractor request.
+     */
     public function rejectContractor(Request $request, $contractorID)
     {
         $user = Auth::user();

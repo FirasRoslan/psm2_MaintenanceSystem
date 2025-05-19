@@ -36,10 +36,41 @@ Route::middleware('role:landlord')->group(function () {
     Route::middleware('role:landlord')->group(function () {
         // Existing routes...
         
-        // Contractor management routes
-        Route::get('/landlord/contractors', [LandlordViewController::class, 'contractorRequests'])->name('landlord.contractors.index');
-        Route::post('/landlord/contractors/{contractor}/approve', [LandlordViewController::class, 'approveContractor'])->name('landlord.contractors.approve');
-        Route::post('/landlord/contractors/{contractor}/reject', [LandlordViewController::class, 'rejectContractor'])->name('landlord.contractors.reject');
+        // Landlord routes
+        Route::middleware(['auth', 'role:landlord'])->group(function () {
+            // Properties
+            Route::get('/properties', [PropertyController::class, 'showHouses'])->name('properties.index');
+            Route::get('/properties/create', [PropertyController::class, 'createHouse'])->name('properties.create');
+            Route::post('/properties', [PropertyController::class, 'storeHouse'])->name('properties.store');
+            Route::get('/properties/{house}', [PropertyController::class, 'showHouse'])->name('properties.show');
+            Route::delete('/properties/{house}', [PropertyController::class, 'deleteHouse'])->name('properties.delete');
+        
+            // Rooms
+            Route::get('/properties/{house}/rooms/create', [PropertyController::class, 'createRoom'])->name('properties.rooms.create');
+            Route::post('/properties/{house}/rooms', [PropertyController::class, 'storeRoom'])->name('properties.rooms.store');
+            Route::delete('/properties/rooms/{room}', [PropertyController::class, 'deleteRoom'])->name('properties.rooms.delete');
+        
+            // Items
+            Route::get('/properties/rooms/{room}/items/create', [PropertyController::class, 'createItem'])->name('properties.rooms.items.create');
+            Route::post('/properties/rooms/{room}/items', [PropertyController::class, 'storeItem'])->name('properties.rooms.items.store');
+            Route::delete('/properties/items/{item}', [PropertyController::class, 'deleteItem'])->name('properties.items.delete');
+            Route::get('/properties/rooms/{room}/items', [PropertyController::class, 'getRoomItems'])->name('properties.rooms.items.get');
+        
+            // Tenants
+            Route::get('/tenants', [PropertyController::class, 'showTenants'])->name('tenants.index');
+            Route::get('/tenants/create', [PropertyController::class, 'createTenant'])->name('tenants.create');
+            Route::post('/tenants', [PropertyController::class, 'storeTenant'])->name('tenants.store');
+            Route::get('/tenants/{tenant:userID}', [PropertyController::class, 'showTenant'])->name('tenants.show');
+            Route::get('/tenants/{tenant:userID}/edit', [PropertyController::class, 'editTenant'])->name('tenants.edit');
+            Route::put('/tenants/{tenant:userID}', [PropertyController::class, 'updateTenant'])->name('tenants.update');
+            Route::delete('/tenants/{tenant:userID}', [PropertyController::class, 'deleteTenant'])->name('tenants.delete');
+        
+            // Contractor management routes
+            Route::get('/landlord/contractors', [LandlordViewController::class, 'viewContractors'])->name('landlord.contractors.index');
+            Route::get('/landlord/contractors/{contractor}', [LandlordViewController::class, 'showContractor'])->name('landlord.contractors.show');
+            Route::post('/landlord/contractors/{contractor}/approve', [LandlordViewController::class, 'approveContractor'])->name('landlord.contractors.approve');
+            Route::post('/landlord/contractors/{contractor}/reject', [LandlordViewController::class, 'rejectContractor'])->name('landlord.contractors.reject');
+        });
     });
 });
 
@@ -59,6 +90,9 @@ Route::middleware('role:contractor')->group(function () {
     Route::post('/contractor/request-approval', [ContractorViewController::class, 'requestApproval'])->name('contractor.request-approval');
     Route::get('/contractor/approved-landlords', [ContractorViewController::class, 'viewApprovedLandlords'])->name('contractor.approved-landlords');
     Route::get('/contractor/tasks', [ContractorViewController::class, 'viewTasks'])->name('contractor.tasks');
+    
+    // Add new route for viewing landlord profile
+    Route::get('/contractor/landlords/{landlord}/profile', [ContractorViewController::class, 'viewLandlordProfile'])->name('contractor.landlord-profile');
     
     // Task status update route
     Route::put('/contractor/tasks/{task}/status', [ContractorViewController::class, 'updateTaskStatus'])->name('contractor.tasks.update-status');

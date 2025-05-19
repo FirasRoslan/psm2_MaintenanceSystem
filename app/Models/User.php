@@ -44,8 +44,6 @@ class User extends Authenticatable
         return $this->hasMany(Report::class, 'userID');
     }
 
-    // Add these methods to your User model
-
     // For contractors
     public function landlords()
     {
@@ -74,6 +72,9 @@ class User extends Authenticatable
     }
 
     // For landlords
+    /**
+     * Get all contractors for a landlord.
+     */
     public function contractors()
     {
         return $this->belongsToMany(User::class, 'contractor_landlord', 'landlordID', 'contractorID')
@@ -82,6 +83,9 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
+    /**
+     * Get approved contractors for a landlord.
+     */
     public function approvedContractors()
     {
         return $this->belongsToMany(User::class, 'contractor_landlord', 'landlordID', 'contractorID')
@@ -91,6 +95,9 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
+    /**
+     * Get pending contractor requests for a landlord.
+     */
     public function pendingContractorRequests()
     {
         return $this->belongsToMany(User::class, 'contractor_landlord', 'landlordID', 'contractorID')

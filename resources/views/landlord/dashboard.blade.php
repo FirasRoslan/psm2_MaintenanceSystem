@@ -28,9 +28,28 @@
                 </div>
             </div>
             @endif
+            
+            <!-- Contractor request notification -->
+            @if(isset($pendingContractorCount) && $pendingContractorCount > 0)
+            <div class="alert alert-warning border-0 shadow-sm mt-3">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-hard-hat fa-2x text-warning me-3"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">Pending Contractor Requests</h5>
+                        <p class="mb-2">You have {{ $pendingContractorCount }} pending contractor {{ Str::plural('request', $pendingContractorCount) }}.</p>
+                        <a href="{{ route('landlord.contractors.index') }}" class="btn btn-warning btn-sm px-4">
+                            <i class="fas fa-hard-hat me-1"></i> View Requests
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 
+    <!-- Rest of the content remains unchanged -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm">

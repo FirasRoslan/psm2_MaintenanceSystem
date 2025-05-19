@@ -223,3 +223,34 @@
     @stack('scripts')
 </body>
 </html>
+
+<!-- Sidebar menu - This is a partial example of where to add the new menu item -->
+<ul class="nav flex-column">
+    <!-- Tenants menu item -->
+    <li class="nav-item">
+        <a href="{{ route('landlord.tenants.index') }}" class="nav-link {{ request()->routeIs('landlord.tenants.*') ? 'active' : '' }}">
+            <i class="fas fa-users me-2"></i> Tenants
+        </a>
+    </li>
+    
+    <!-- Add the new Contractors menu item here, between Tenants and Requests -->
+    <li class="nav-item">
+        <a href="{{ route('landlord.tenants.index') }}" class="nav-link {{ request()->routeIs('landlord.tenants.*') ? 'active' : '' }}">
+            <i class="fas fa-users me-2"></i> Tenants
+        </a>
+    </li>
+    
+    <li class="nav-item">
+        <a href="{{ route('landlord.contractors.index') }}" class="nav-link {{ request()->routeIs('landlord.contractors.*') ? 'active' : '' }}">
+            <i class="fas fa-hard-hat me-2"></i> Contractors
+        </a>
+    </li>
+    
+    <li class="nav-item">
+        <a href="{{ route('landlord.requests.index') }}" class="nav-link {{ request()->routeIs('landlord.requests.*') ? 'active' : '' }}">
+            <i class="fas fa-tools me-2"></i> Requests
+        </a>
+    </li>
+    
+    <!-- ... other menu items ... -->
+</ul>

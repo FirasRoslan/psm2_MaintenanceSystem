@@ -18,6 +18,10 @@
                 <a href="{{ route('landlord.tenants.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.tenants.*') ? 'active' : '' }}">
                     <i class="fas fa-users me-2"></i> Tenants
                 </a>
+                <!-- Add Contractors tab here -->
+                <a href="{{ route('landlord.contractors.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.contractors.*') ? 'active' : '' }}">
+                    <i class="fas fa-hard-hat me-2"></i> Contractors
+                </a>
                 <a href="{{ route('landlord.requests.index') }}" class="sidebar-link mb-2 {{ request()->routeIs('landlord.requests.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list me-2"></i> Requests
                 </a>

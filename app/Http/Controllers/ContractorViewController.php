@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\House;
 use App\Models\User;
+use App\Models\Task;
 use App\Models\ContractorLandlord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,12 @@ class ContractorViewController extends Controller
         // Get pending requests
         $pendingRequests = $user->pendingLandlordRequests()->get();
         
-        return view('contractor.dashboard', compact('approvedLandlords', 'pendingRequests'));
+        // Get recently approved landlords (within the last 7 days)
+        $recentlyApprovedLandlords = $user->approvedLandlords()
+            ->wherePivot('updated_at', '>=', now()->subDays(7))
+            ->get();
+        
+        return view('contractor.dashboard', compact('approvedLandlords', 'pendingRequests', 'recentlyApprovedLandlords'));
     }
     
     public function findLandlords()
@@ -121,5 +127,44 @@ class ContractorViewController extends Controller
         $task->save();
         
         return back()->with('success', 'Task status updated successfully.');
+    }
+    
+    /**
+     * View landlord profile and properties
+     */
+    public function viewLandlordProfile(User $landlord)
+    {
+        // Check if the landlord exists and is a landlord
+        if (!$landlord || $landlord->role !== 'landlord') {
+            return redirect()->route('contractor.dashboard')
+                ->with('error', 'Invalid landlord selected.');
+        }
+        
+        // Check if the contractor is approved by this landlord
+        $user = Auth::user();
+        $relationship = ContractorLandlord::where('contractorID', $user->userID)
+            ->where('landlordID', $landlord->userID)
+            ->where('approval_status', true)
+            ->first();
+            
+        if (!$relationship) {
+            return redirect()->route('contractor.dashboard')
+                ->with('error', 'You are not approved to view this landlord\'s profile.');
+        }
+        
+        // Get all properties owned by this landlord
+        $properties = House::where('userID', $landlord->userID)->get();
+        
+        // Get tasks assigned by this landlord
+        $tasks = Task::whereHas('report.room.house', function($query) use ($landlord) {
+            $query->where('userID', $landlord->userID);
+        })
+        ->where('userID', $user->userID)
+        ->with(['report.room.house', 'report.item'])
+        ->latest()
+        ->take(5)
+        ->get();
+        
+        return view('contractor.landlord-profile', compact('landlord', 'properties', 'relationship', 'tasks'));
     }
 }
