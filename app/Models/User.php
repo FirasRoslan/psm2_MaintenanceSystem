@@ -44,6 +44,62 @@ class User extends Authenticatable
         return $this->hasMany(Report::class, 'userID');
     }
 
+    // Add these methods to your User model
+
+    // For contractors
+    public function landlords()
+    {
+        return $this->belongsToMany(User::class, 'contractor_landlord', 'contractorID', 'landlordID')
+                    ->where('role', 'landlord')
+                    ->withPivot('maintenance_scope', 'specialization', 'approval_status')
+                    ->withTimestamps();
+    }
+
+    public function approvedLandlords()
+    {
+        return $this->belongsToMany(User::class, 'contractor_landlord', 'contractorID', 'landlordID')
+                    ->where('role', 'landlord')
+                    ->wherePivot('approval_status', true)
+                    ->withPivot('maintenance_scope', 'specialization', 'approval_status')
+                    ->withTimestamps();
+    }
+
+    public function pendingLandlordRequests()
+    {
+        return $this->belongsToMany(User::class, 'contractor_landlord', 'contractorID', 'landlordID')
+                    ->where('role', 'landlord')
+                    ->wherePivot('approval_status', null)
+                    ->withPivot('maintenance_scope', 'specialization', 'approval_status')
+                    ->withTimestamps();
+    }
+
+    // For landlords
+    public function contractors()
+    {
+        return $this->belongsToMany(User::class, 'contractor_landlord', 'landlordID', 'contractorID')
+                    ->where('role', 'contractor')
+                    ->withPivot('maintenance_scope', 'specialization', 'approval_status')
+                    ->withTimestamps();
+    }
+
+    public function approvedContractors()
+    {
+        return $this->belongsToMany(User::class, 'contractor_landlord', 'landlordID', 'contractorID')
+                    ->where('role', 'contractor')
+                    ->wherePivot('approval_status', true)
+                    ->withPivot('maintenance_scope', 'specialization', 'approval_status')
+                    ->withTimestamps();
+    }
+
+    public function pendingContractorRequests()
+    {
+        return $this->belongsToMany(User::class, 'contractor_landlord', 'landlordID', 'contractorID')
+                    ->where('role', 'contractor')
+                    ->wherePivot('approval_status', null)
+                    ->withPivot('maintenance_scope', 'specialization', 'approval_status')
+                    ->withTimestamps();
+    }
+
     public function tasks()
     {
         return $this->hasMany(Task::class, 'userID');

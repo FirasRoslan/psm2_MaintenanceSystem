@@ -14,12 +14,14 @@ class Task extends Model
     protected $fillable = [
         'reportID',
         'userID',
+        'task_type',
         'task_status',
-        'task_type'
+        'task_notes',
+        'completed_at'
     ];
 
-    protected $casts = [
-        'task_status' => 'string'
+    protected $dates = [
+        'completed_at'
     ];
 
     public function report()
@@ -27,13 +29,8 @@ class Task extends Model
         return $this->belongsTo(Report::class, 'reportID');
     }
 
-    public function user()
+    public function contractor()
     {
         return $this->belongsTo(User::class, 'userID');
-    }
-
-    public function phases()
-    {
-        return $this->hasMany(Phase::class, 'taskID');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\PropertyController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use Illuminate\Support\Facades\Auth;
 
 // Public routes
 Route::get('/', function () {
@@ -20,20 +21,25 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 // Protected routes with role middleware
 Route::middleware('role:landlord')->group(function () {
     Route::get('/landlord/dashboard', [LandlordViewController::class, 'dashboard'])->name('landlord.dashboard');
     
-    // Add this route for maintenance requests
-    // Inside your landlord middleware group
+    // Maintenance request routes
+    Route::get('/landlord/requests', [LandlordViewController::class, 'maintenanceRequests'])->name('landlord.requests.index');
+    Route::put('/landlord/requests/{report}/status', [LandlordViewController::class, 'updateRequestStatus'])->name('landlord.requests.update-status');
+    Route::get('/landlord/requests/{report}/assign', [LandlordViewController::class, 'showAssignTaskForm'])->name('landlord.requests.assign-task');
+    Route::post('/landlord/requests/{report}/assign', [LandlordViewController::class, 'assignTask'])->name('landlord.requests.store-task');
+    
+    // Add these to your landlord routes
     Route::middleware('role:landlord')->group(function () {
         // Existing routes...
         
-        // Maintenance request routes
-        Route::get('/landlord/requests', [LandlordViewController::class, 'maintenanceRequests'])->name('landlord.requests.index');
-        Route::put('/landlord/requests/{report}/status', [LandlordViewController::class, 'updateRequestStatus'])->name('landlord.requests.update-status');
-        Route::get('/landlord/requests/{report}/assign', [LandlordViewController::class, 'showAssignTaskForm'])->name('landlord.requests.assign-task');
-        Route::post('/landlord/requests/{report}/assign', [LandlordViewController::class, 'assignTask'])->name('landlord.requests.store-task');
+        // Contractor management routes
+        Route::get('/landlord/contractors', [LandlordViewController::class, 'contractorRequests'])->name('landlord.contractors.index');
+        Route::post('/landlord/contractors/{contractor}/approve', [LandlordViewController::class, 'approveContractor'])->name('landlord.contractors.approve');
+        Route::post('/landlord/contractors/{contractor}/reject', [LandlordViewController::class, 'rejectContractor'])->name('landlord.contractors.reject');
     });
 });
 
@@ -44,8 +50,18 @@ Route::middleware('role:tenant')->group(function () {
     Route::get('/tenant/reports', [TenantViewController::class, 'reports'])->name('tenant.reports.index');
 });
 
+// Update the contractor routes
+// Add this to your contractor routes
 Route::middleware('role:contractor')->group(function () {
     Route::get('/contractor/dashboard', [ContractorViewController::class, 'dashboard'])->name('contractor.dashboard');
+    Route::get('/contractor/find-landlords', [ContractorViewController::class, 'findLandlords'])->name('contractor.find-landlords');
+    Route::get('/contractor/landlords/{landlord}/properties', [ContractorViewController::class, 'showLandlordProperties'])->name('contractor.landlord-properties');
+    Route::post('/contractor/request-approval', [ContractorViewController::class, 'requestApproval'])->name('contractor.request-approval');
+    Route::get('/contractor/approved-landlords', [ContractorViewController::class, 'viewApprovedLandlords'])->name('contractor.approved-landlords');
+    Route::get('/contractor/tasks', [ContractorViewController::class, 'viewTasks'])->name('contractor.tasks');
+    
+    // Task status update route
+    Route::put('/contractor/tasks/{task}/status', [ContractorViewController::class, 'updateTaskStatus'])->name('contractor.tasks.update-status');
 });
 
 
