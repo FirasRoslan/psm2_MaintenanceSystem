@@ -6,6 +6,7 @@ use App\Models\HouseTenant;
 use App\Models\Report;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\House;
 use App\Models\ContractorLandlord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,19 +15,86 @@ class LandlordViewController extends Controller
 {
     public function dashboard()
     {
+        $user = Auth::user();
+        
         // Get count of pending tenant requests
-        $pendingRequestsCount = HouseTenant::whereHas('house', function($query) {
-            $query->where('userID', Auth::id());
+        $pendingRequestsCount = HouseTenant::whereHas('house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
         })
         ->whereNull('approval_status')
         ->count();
         
         // Get count of pending contractor requests
-        $pendingContractorCount = ContractorLandlord::where('landlordID', Auth::id())
+        $pendingContractorCount = ContractorLandlord::where('landlordID', $user->userID)
             ->whereNull('approval_status')
             ->count();
         
-        return view('landlord.dashboard', compact('pendingRequestsCount', 'pendingContractorCount'));
+        // Get property statistics
+        $propertiesCount = House::where('userID', $user->userID)->count();
+        $totalRooms = House::where('userID', $user->userID)->sum('house_number_room');
+        $totalToilets = House::where('userID', $user->userID)->sum('house_number_toilet');
+        
+        // Get tenant statistics
+        $approvedTenantsCount = HouseTenant::whereHas('house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->where('approval_status', true)
+        ->count();
+        
+        // Get maintenance statistics
+        $pendingMaintenanceCount = Report::whereHas('room.house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->where('report_status', 'Pending')
+        ->count();
+        
+        $inProgressMaintenanceCount = Report::whereHas('room.house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->where('report_status', 'In Progress')
+        ->count();
+        
+        $completedMaintenanceCount = Report::whereHas('room.house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->where('report_status', 'Completed')
+        ->count();
+        
+        // Get recent maintenance reports
+        $recentReports = Report::whereHas('room.house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->with(['room.house', 'item', 'user'])
+        ->latest()
+        ->take(5)
+        ->get();
+        
+        // Get recently viewed properties
+        $recentProperties = House::where('userID', $user->userID)
+            ->with(['approvedTenants', 'pendingTenants'])
+            ->latest()
+            ->take(3)
+            ->get();
+        
+        // Get approved contractors
+        $approvedContractors = $user->approvedContractors()
+            ->take(3)
+            ->get();
+        
+        return view('landlord.dashboard', compact(
+            'pendingRequestsCount', 
+            'pendingContractorCount',
+            'propertiesCount',
+            'totalRooms',
+            'totalToilets',
+            'approvedTenantsCount',
+            'pendingMaintenanceCount',
+            'inProgressMaintenanceCount',
+            'completedMaintenanceCount',
+            'recentReports',
+            'recentProperties',
+            'approvedContractors'
+        ));
     }
     
     public function maintenanceRequests()

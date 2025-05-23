@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\ContractorLandlord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ContractorViewController extends Controller
 {
@@ -132,26 +133,16 @@ class ContractorViewController extends Controller
     /**
      * View landlord profile and properties
      */
-    public function viewLandlordProfile(User $landlord)
+    public function showLandlordProfile($id)
     {
-        // Check if the landlord exists and is a landlord
-        if (!$landlord || $landlord->role !== 'landlord') {
-            return redirect()->route('contractor.dashboard')
-                ->with('error', 'Invalid landlord selected.');
-        }
+        $contractor = auth()->user();
+        $landlord = User::findOrFail($id);
         
         // Check if the contractor is approved by this landlord
-        $user = Auth::user();
-        $relationship = ContractorLandlord::where('contractorID', $user->userID)
+        $relationship = ContractorLandlord::where('contractorID', $contractor->userID)
             ->where('landlordID', $landlord->userID)
-            ->where('approval_status', true)
             ->first();
             
-        if (!$relationship) {
-            return redirect()->route('contractor.dashboard')
-                ->with('error', 'You are not approved to view this landlord\'s profile.');
-        }
-        
         // Get all properties owned by this landlord
         $properties = House::where('userID', $landlord->userID)->get();
         
@@ -159,12 +150,20 @@ class ContractorViewController extends Controller
         $tasks = Task::whereHas('report.room.house', function($query) use ($landlord) {
             $query->where('userID', $landlord->userID);
         })
-        ->where('userID', $user->userID)
+        ->where('userID', $contractor->userID)
         ->with(['report.room.house', 'report.item'])
         ->latest()
         ->take(5)
         ->get();
         
         return view('contractor.landlord-profile', compact('landlord', 'properties', 'relationship', 'tasks'));
+    }
+    
+    /**
+     * Alias for showLandlordProfile - used by routes
+     */
+    public function viewLandlordProfile($id)
+    {
+        return $this->showLandlordProfile($id);
     }
 }

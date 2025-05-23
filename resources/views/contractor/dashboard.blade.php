@@ -109,6 +109,21 @@
             
             <div class="row">
                 <div class="col-md-6 mb-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <h5 class="card-title">My Requests</h5>
+                            <p class="card-text text-muted mb-4">Manage your landlord approval requests and check their status.</p>
+                            <a href="{{ route('contractor.requests') }}" class="btn btn-primary rounded-pill px-4">
+                                <i class="fas fa-paper-plane me-2"></i>View Requests
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
                     <div class="card border-0 shadow-sm rounded-4">
                         <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Approved Landlords</h5>

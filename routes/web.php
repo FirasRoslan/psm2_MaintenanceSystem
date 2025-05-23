@@ -96,6 +96,8 @@ Route::middleware('role:contractor')->group(function () {
     
     // Task status update route
     Route::put('/contractor/tasks/{task}/status', [ContractorViewController::class, 'updateTaskStatus'])->name('contractor.tasks.update-status');
+    // Add this with your other contractor routes
+    Route::get('/contractor/requests', [ContractorViewController::class, 'viewRequests'])->name('contractor.requests');
 });
 
 

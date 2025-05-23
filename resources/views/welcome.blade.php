@@ -334,7 +334,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content">
                     <h1>Everything You Need to Manage Your Properties</h1>
-                    <p>Property management software that helps you list properties, collect payments, and manage your portfolio with ease, all online.</p>
+                    <p>Easily manage rental maintenance, track reports from tenants, and assign tasks to contractors – all online, anytime.</p>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="{{ route('register') }}" class="btn btn-primary">Get Started</a>
                     </div>
