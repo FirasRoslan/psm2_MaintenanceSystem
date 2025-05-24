@@ -357,55 +357,55 @@
                 <div class="col-md-4">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <h3>Property Listings</h3>
-                        <p>Easily list and showcase your properties with detailed information and high-quality images.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Tenant Management</h3>
-                        <p>Keep track of all your tenants, their lease agreements, and communication history in one place.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
                             <i class="fas fa-tools"></i>
                         </div>
-                        <h3>Maintenance Requests</h3>
-                        <p>Efficiently handle maintenance requests and track repairs to keep your properties in top condition.</p>
+                        <h3>Maintenance Reporting</h3>
+                        <p>Tenants can easily report issues like plumbing or electrical problems. Reports include descriptions and photos, helping landlords take quick action.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-file-invoice"></i>
+                            <i class="fas fa-tasks"></i>
                         </div>
-                        <h3>Rent Collection</h3>
-                        <p>Collect rent payments online and keep track of payment history and outstanding balances.</p>
+                        <h3>Task Assignment</h3>
+                        <p>Landlords can assign maintenance tasks directly to contractors and monitor progress in real-time for better task tracking and accountability.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-home"></i>
                         </div>
-                        <h3>Financial Reporting</h3>
-                        <p>Generate detailed financial reports to gain insights into your property performance.</p>
+                        <h3>Property Management</h3>
+                        <p>Landlords can add and update property details such as address, facilities provided, and tenant info for easier portfolio tracking.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-mobile-alt"></i>
+                            <i class="fas fa-bell"></i>
                         </div>
-                        <h3>Mobile Access</h3>
-                        <p>Access your property management dashboard anytime, anywhere from any device.</p>
+                        <h3>Notification System</h3>
+                        <p>Instant notifications keep landlords, tenants, and contractors informed about task updates, new reports, and system alerts.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3>Maintenance History</h3>
+                        <p>Every completed task is stored in the history module, helping landlords review past issues and improve future property maintenance.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-lock"></i>
+                        </div>
+                        <h3>User Roles Access</h3>
+                        <p>Role-based login for Landlords, Tenants, and Contractors ensures each user sees only the tools they need to use, making the system simple and secure.</p>
                     </div>
                 </div>
             </div>
@@ -417,7 +417,7 @@
         <div class="container">
             <div class="cta-content">
                 <h2>Ready to Streamline Your Property Management?</h2>
-                <p>Join thousands of property managers who are saving time and increasing efficiency with our platform.</p>
+                <p>A web-based system that helps landlords manage property maintenance, track tenant requests, and assign tasks to contractors – all in one place.</p>
                 <a href="{{ route('register') }}" class="btn btn-primary">Get Started Today</a>
             </div>
         </div>
