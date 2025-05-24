@@ -17,15 +17,19 @@ class TenantViewController extends Controller
     {
         $user = Auth::user();
         
-        // Get tenant's house assignments with their status
+        // Get approved houses
+        $approvedHouses = $user->approvedHouses()->with('user', 'rooms')->get();
+        
+        // Get pending houses
         $pendingHouses = $user->pendingHouses()->with('user')->get();
-        $approvedHouses = $user->approvedHouses()->with('user')->get();
-        $rejectedHouses = $user->rejectedHouses()->with('user')->get();
         
-        // Get recent reports
-        $recentReports = $user->reports()->with(['room.house', 'item'])->latest()->take(5)->get();
+        // Get maintenance reports - Fix the ambiguous column name
+        $maintenanceReports = \App\Models\Report::whereHas('room.house.tenants', function($query) use ($user) {
+            $query->where('users.userID', $user->userID)
+                  ->where('house_tenant.approval_status', true);  // Specify the table name
+        })->with(['room.house', 'item'])->latest()->get();
         
-        return view('tenant.dashboard', compact('pendingHouses', 'approvedHouses', 'rejectedHouses', 'recentReports'));
+        return view('tenant.dashboard', compact('approvedHouses', 'pendingHouses', 'maintenanceReports'));
     }
     
     public function findHouses()
