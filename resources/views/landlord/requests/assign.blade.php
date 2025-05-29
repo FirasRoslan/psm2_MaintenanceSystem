@@ -159,7 +159,7 @@
                                 <span class="input-group-text bg-white border-end-0">
                                     <i class="fas fa-tasks text-primary"></i>
                                 </span>
-                                <input type="text" name="task_type" id="task_type" class="form-control border-start-0 @error('task_type') is-invalid @enderror" placeholder="e.g., Plumbing Repair, Electrical Fix" required>
+                                <input type="text" name="task_type" class="form-control" required>
                             </div>
                             @error('task_type')
                                 <div class="invalid-feedback">{{ $message }}</div>

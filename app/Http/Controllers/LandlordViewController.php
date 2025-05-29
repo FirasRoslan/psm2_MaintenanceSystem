@@ -170,7 +170,7 @@ class LandlordViewController extends Controller
         $task->reportID = $report->reportID;
         $task->userID = $request->userID;
         $task->task_type = $request->task_type;
-        $task->task_status = 'Pending';
+        $task->task_status = 'pending'; // Changed from 'Pending' to 'pending'
         $task->save();
         
         // Update the report status to "In Progress"
@@ -265,5 +265,69 @@ class LandlordViewController extends Controller
         $relationship->save();
         
         return back()->with('success', 'Contractor request has been rejected.');
+    }
+    
+    /**
+     * Display the history page.
+     */
+    public function history()
+    {
+        $user = Auth::user();
+        
+        // Get completed maintenance reports
+        $completedReports = Report::whereHas('room.house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->where('report_status', 'Completed')
+        ->with(['room.house', 'item', 'user', 'tasks'])
+        ->latest()
+        ->paginate(10);
+        
+        return view('landlord.history.index', compact('completedReports'));
+    }
+    
+    /**
+     * Display all tasks assigned by this landlord with phase progress.
+     */
+    public function tasks()
+    {
+        $user = Auth::user();
+        
+        // Get all tasks for properties owned by this landlord
+        $tasks = Task::whereHas('report.room.house', function($query) use ($user) {
+            $query->where('userID', $user->userID);
+        })
+        ->with([
+            'report.room.house', 
+            'report.item', 
+            'contractor',
+            'phases' => function($query) {
+                $query->orderBy('arrangement_number');
+            }
+        ])
+        ->latest()
+        ->get();
+        
+        // Group tasks by status for better organization
+        $tasksByStatus = $tasks->groupBy('task_status');
+        
+        return view('landlord.tasks.index', compact('tasks', 'tasksByStatus'));
+    }
+    
+    /**
+     * Show a specific maintenance request.
+     */
+    public function showRequest(Report $report)
+    {
+        $user = Auth::user();
+        
+        // Ensure the report belongs to a property owned by this landlord
+        $report->load(['room.house', 'item', 'user', 'tasks.contractor']);
+        
+        if ($report->room->house->userID !== $user->userID) {
+            abort(403, 'Unauthorized access to this report.');
+        }
+        
+        return view('landlord.requests.show', compact('report'));
     }
 }

@@ -36,7 +36,7 @@
                 </div>
                 <h5 class="mb-0">Pending</h5>
             </div>
-            <h2 class="mb-3">{{ $tasks->where('task_status', 'Pending')->count() }}</h2>
+            <h2 class="mb-3">{{ $tasks->where('task_status', 'pending')->count() }}</h2>
             <p class="text-muted mb-0">Tasks awaiting completion</p>
         </div>
         @if($tasks->count() > 0)
@@ -65,11 +65,11 @@
                                 <td>{{ \Illuminate\Support\Str::limit($task->report->report_desc, 50) }}</td>
                                 <td>{{ $task->task_type }}</td>
                                 <td>
-                                    @if($task->task_status == 'Pending')
+                                    @if($task->task_status == 'pending')
                                         <span class="badge bg-warning text-dark">Pending</span>
-                                    @elseif($task->task_status == 'In Progress')
+                                    @elseif($task->task_status == 'in_progress')
                                         <span class="badge bg-info">In Progress</span>
-                                    @elseif($task->task_status == 'Completed')
+                                    @elseif($task->task_status == 'completed')
                                         <span class="badge bg-success">Completed</span>
                                     @endif
                                 </td>
@@ -88,7 +88,7 @@
                                                 <form action="{{ route('contractor.tasks.update-status', $task->taskID) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
-                                                    <input type="hidden" name="status" value="In Progress">
+                                                    <input type="hidden" name="status" value="in_progress">
                                                     <button type="submit" class="dropdown-item">Mark as In Progress</button>
                                                 </form>
                                             </li>
@@ -96,7 +96,7 @@
                                                 <form action="{{ route('contractor.tasks.update-status', $task->taskID) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
-                                                    <input type="hidden" name="status" value="Completed">
+                                                    <input type="hidden" name="status" value="completed">
                                                     <button type="submit" class="dropdown-item">Mark as Completed</button>
                                                 </form>
                                             </li>

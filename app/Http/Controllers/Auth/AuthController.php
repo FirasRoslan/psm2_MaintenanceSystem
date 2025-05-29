@@ -98,6 +98,13 @@ class AuthController extends Controller
             : back()->withErrors(['email' => __($status)]);
     }
 
+    public function showProfile()
+    {
+        return view('auth.profile', [
+            'user' => auth()->user()
+        ]);
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();

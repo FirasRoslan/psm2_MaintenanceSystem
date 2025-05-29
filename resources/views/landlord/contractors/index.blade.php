@@ -4,18 +4,36 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="mb-1">Manage Contractors</h4>
-            <p class="text-muted mb-0">Approve or reject contractor requests and manage your contractors</p>
+    <!-- Enhanced Header Section -->
+    <div class="page-header mb-5">
+        <div class="row align-items-center">
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="{{ route('landlord.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Contractors</li>
+                    </ol>
+                </nav>
+                <div class="d-flex align-items-center">
+                    <div class="page-icon me-3">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <div>
+                        <h1 class="page-title mb-1">Manage Contractors</h1>
+                        <p class="page-description mb-0">Approve or reject contractor requests and manage your contractors</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto">
+                <a href="{{ route('landlord.dashboard') }}" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
         </div>
-        <a href="{{ route('landlord.dashboard') }}" class="btn btn-outline-primary rounded-pill">
-            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-        </a>
     </div>
 
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
+    <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-4 mb-4" role="alert">
         <div class="d-flex">
             <div class="me-3">
                 <i class="fas fa-check-circle fa-lg"></i>
@@ -29,7 +47,7 @@
     @endif
 
     @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-4 mb-4" role="alert">
         <div class="d-flex">
             <div class="me-3">
                 <i class="fas fa-exclamation-circle fa-lg"></i>
@@ -42,109 +60,157 @@
     </div>
     @endif
 
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-white border-0">
-                    <h5 class="mb-0">Pending Requests</h5>
+    <!-- Contractors Grid -->
+    <div class="row g-4">
+        <!-- Pending Requests Section -->
+        <div class="col-lg-6">
+            <div class="contractors-section">
+                <div class="section-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="section-icon me-3">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4 class="section-title mb-0">Pending Requests</h4>
+                                <p class="section-subtitle mb-0">Review and approve contractor applications</p>
+                            </div>
+                        </div>
+                        @if($pendingRequests->count() > 0)
+                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2">{{ $pendingRequests->count() }}</span>
+                        @endif
+                    </div>
                 </div>
-                <div class="card-body p-0">
+                
+                <div class="contractors-grid">
                     @if($pendingRequests->count() > 0)
-                        <div class="list-group list-group-flush">
-                            @foreach($pendingRequests as $contractor)
-                                <div class="list-group-item border-0 p-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="avatar-sm me-3 bg-warning text-dark">
-                                            {{ substr($contractor->name, 0, 1) }}
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">{{ $contractor->name }}</h6>
-                                            <small class="text-muted">{{ $contractor->email }}</small>
-                                        </div>
+                        @foreach($pendingRequests as $contractor)
+                        <div class="contractor-card pending">
+                            <div class="contractor-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="contractor-avatar pending">
+                                        <span class="initials">{{ substr($contractor->name, 0, 1) }}</span>
                                     </div>
-                                    <div class="mb-3">
-                                        <div class="d-flex mb-2">
-                                            <div class="text-muted me-2">Scope:</div>
-                                            <div>{{ $contractor->pivot->maintenance_scope }}</div>
-                                        </div>
-                                        <div class="d-flex">
-                                            <div class="text-muted me-2">Specialization:</div>
-                                            <div><span class="badge bg-primary rounded-pill">{{ $contractor->pivot->specialization }}</span></div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex">
-                                        <form action="{{ route('landlord.contractors.approve', $contractor->userID) }}" method="POST" class="me-2">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success rounded-pill px-4">
-                                                <i class="fas fa-check me-2"></i>Approve
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('landlord.contractors.reject', $contractor->userID) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn btn-outline-danger rounded-pill px-4">
-                                                <i class="fas fa-times me-2"></i>Reject
-                                            </button>
-                                        </form>
+                                    <div class="contractor-info">
+                                        <h5 class="contractor-name mb-1">{{ $contractor->name }}</h5>
+                                        <p class="contractor-email mb-0">{{ $contractor->email }}</p>
+                                        @if($contractor->phone)
+                                        <p class="contractor-phone mb-0">{{ $contractor->phone }}</p>
+                                        @endif
                                     </div>
                                 </div>
-                            @endforeach
+                                <div class="status-badge">
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contractor-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Scope:</span>
+                                    <span class="detail-value">{{ $contractor->pivot->maintenance_scope }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Specialization:</span>
+                                    <span class="badge bg-primary rounded-pill">{{ $contractor->pivot->specialization }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contractor-actions">
+                                <form action="{{ route('landlord.contractors.approve', $contractor->userID) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success btn-sm me-2">
+                                        <i class="fas fa-check me-1"></i>Approve
+                                    </button>
+                                </form>
+                                <form action="{{ route('landlord.contractors.reject', $contractor->userID) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-times me-1"></i>Reject
+                                    </button>
+                                </form>
+                            </div>
                         </div>
+                        @endforeach
                     @else
-                        <div class="text-center py-5">
-                            <div class="empty-state-icon mb-3">
+                        <div class="empty-state">
+                            <div class="empty-icon">
                                 <i class="fas fa-user-clock"></i>
                             </div>
-                            <h5>No Pending Requests</h5>
-                            <p class="text-muted">You don't have any pending contractor requests.</p>
+                            <h5 class="empty-title">No Pending Requests</h5>
+                            <p class="empty-description">You don't have any pending contractor requests at the moment.</p>
                         </div>
                     @endif
                 </div>
             </div>
         </div>
         
-        <div class="col-md-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Approved Contractors</h5>
-                    <span class="badge bg-primary rounded-pill">{{ $approvedContractors->count() }}</span>
-                </div>
-                <div class="card-body p-0">
-                    @if($approvedContractors->count() > 0)
-                        <div class="list-group list-group-flush">
-                            @foreach($approvedContractors as $contractor)
-                                <div class="list-group-item border-0 p-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="avatar-sm me-3 bg-primary text-white">
-                                            {{ substr($contractor->name, 0, 1) }}
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">{{ $contractor->name }}</h6>
-                                            <small class="text-muted">{{ $contractor->email }}</small>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="d-flex mb-2">
-                                            <div class="text-muted me-2">Scope:</div>
-                                            <div>{{ $contractor->pivot->maintenance_scope }}</div>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <div class="text-muted me-2">Specialization:</div>
-                                            <div><span class="badge bg-primary rounded-pill">{{ $contractor->pivot->specialization }}</span></div>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('landlord.contractors.show', $contractor->userID) }}" class="btn btn-outline-primary rounded-pill px-4">
-                                        <i class="fas fa-eye me-2"></i>View Details
-                                    </a>
-                                </div>
-                            @endforeach
+        <!-- Approved Contractors Section -->
+        <div class="col-lg-6">
+            <div class="contractors-section">
+                <div class="section-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="section-icon me-3">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="section-title mb-0">Approved Contractors</h4>
+                                <p class="section-subtitle mb-0">Manage your approved contractors</p>
+                            </div>
                         </div>
+                        @if($approvedContractors->count() > 0)
+                        <span class="badge bg-success rounded-pill px-3 py-2">{{ $approvedContractors->count() }}</span>
+                        @endif
+                    </div>
+                </div>
+                
+                <div class="contractors-grid">
+                    @if($approvedContractors->count() > 0)
+                        @foreach($approvedContractors as $contractor)
+                        <div class="contractor-card approved">
+                            <div class="contractor-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="contractor-avatar approved">
+                                        <span class="initials">{{ substr($contractor->name, 0, 1) }}</span>
+                                    </div>
+                                    <div class="contractor-info">
+                                        <h5 class="contractor-name mb-1">{{ $contractor->name }}</h5>
+                                        <p class="contractor-email mb-0">{{ $contractor->email }}</p>
+                                        @if($contractor->phone)
+                                        <p class="contractor-phone mb-0">{{ $contractor->phone }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="status-badge">
+                                    <span class="badge bg-success">Approved</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contractor-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Scope:</span>
+                                    <span class="detail-value">{{ $contractor->pivot->maintenance_scope }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Specialization:</span>
+                                    <span class="badge bg-primary rounded-pill">{{ $contractor->pivot->specialization }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contractor-actions">
+                                <a href="{{ route('landlord.contractors.show', $contractor->userID) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                        @endforeach
                     @else
-                        <div class="text-center py-5">
-                            <div class="empty-state-icon mb-3">
+                        <div class="empty-state">
+                            <div class="empty-icon">
                                 <i class="fas fa-user-hard-hat"></i>
                             </div>
-                            <h5>No Approved Contractors</h5>
-                            <p class="text-muted">You don't have any approved contractors yet.</p>
+                            <h5 class="empty-title">No Approved Contractors</h5>
+                            <p class="empty-description">You don't have any approved contractors yet. Approve pending requests to get started.</p>
                         </div>
                     @endif
                 </div>
@@ -155,60 +221,352 @@
 
 @push('styles')
 <style>
-    /* Modern styling */
-    .rounded-4 {
-        border-radius: 0.75rem !important;
+    /* Page Header Styling */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
     }
     
-    .avatar-sm {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+    .page-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
+        font-size: 1.5rem;
+        backdrop-filter: blur(10px);
     }
     
-    .empty-state-icon {
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .page-description {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    .breadcrumb {
+        background: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item.active {
+        color: white;
+    }
+    
+    /* Section Styling */
+    .contractors-section {
+        height: 100%;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 15px 15px 0 0;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .section-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .section-subtitle {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    
+    /* Contractors Grid */
+    .contractors-grid {
+        background: white;
+        border-radius: 0 0 15px 15px;
+        min-height: 400px;
+        max-height: 600px;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contractor-card {
+        background: white;
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .contractor-card:hover {
+        background: #f8fafc;
+        transform: translateX(5px);
+    }
+    
+    .contractor-card:last-child {
+        border-bottom: none;
+    }
+    
+    .contractor-card.pending {
+        border-left: 4px solid #f59e0b;
+    }
+    
+    .contractor-card.approved {
+        border-left: 4px solid #10b981;
+    }
+    
+    /* Contractor Avatar */
+    .contractor-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-right: 1rem;
+    }
+    
+    .contractor-avatar.pending {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: white;
+    }
+    
+    .contractor-avatar.approved {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        color: white;
+    }
+    
+    /* Contractor Info */
+    .contractor-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+    }
+    
+    .contractor-email {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    
+    .contractor-phone {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+    
+    /* Status Badge */
+    .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    /* Contractor Details */
+    .contractor-details {
+        margin: 1rem 0;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 10px;
+    }
+    
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .detail-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .detail-label {
+        font-weight: 500;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    
+    .detail-value {
+        color: #1e293b;
+        font-weight: 500;
+    }
+    
+    /* Contractor Actions */
+    .contractor-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #64748b;
+    }
+    
+    .empty-icon {
         width: 80px;
         height: 80px;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
         border-radius: 50%;
-        background-color: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto;
+        margin: 0 auto 1.5rem;
         font-size: 2rem;
-        color: #adb5bd;
+        color: #94a3b8;
+    }
+    
+    .empty-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-description {
+        color: #64748b;
+        margin: 0;
+    }
+    
+    /* Button Styling */
+    .btn {
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
     }
     
     .btn-primary {
-        background-color: #0ea5e9;
-        border-color: #0ea5e9;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
     }
     
     .btn-primary:hover {
-        background-color: #0284c7;
-        border-color: #0284c7;
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     }
     
     .btn-outline-primary {
-        color: #0ea5e9;
-        border-color: #0ea5e9;
+        color: #667eea;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
     }
     
     .btn-outline-primary:hover {
-        background-color: #0ea5e9;
-        border-color: #0ea5e9;
+        background: #667eea;
+        border-color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        border: none;
+    }
+    
+    .btn-success:hover {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-danger {
+        color: #ef4444;
+        border-color: #ef4444;
+    }
+    
+    .btn-outline-danger:hover {
+        background: #ef4444;
+        border-color: #ef4444;
+        transform: translateY(-2px);
+    }
+    
+    /* Badge Styling */
+    .badge {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
     }
     
     .bg-primary {
-        background-color: #0ea5e9 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     }
     
-    .text-primary {
-        color: #0ea5e9 !important;
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .contractor-card {
+            padding: 1rem;
+        }
+        
+        .contractor-actions {
+            flex-direction: column;
+        }
+        
+        .contractor-actions .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-badge {
+            position: static;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    }
+    
+    /* Scrollbar Styling */
+    .contractors-grid::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .contractors-grid::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    
+    .contractors-grid::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+    
+    .contractors-grid::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
     }
 </style>
 @endpush

@@ -104,7 +104,7 @@ class ContractorViewController extends Controller
     {
         // Validate the request
         $request->validate([
-            'status' => 'required|in:Pending,In Progress,Completed',
+            'status' => 'required|in:pending,in_progress,completed',
         ]);
         
         // Check if the task belongs to this contractor
@@ -117,7 +117,7 @@ class ContractorViewController extends Controller
         $task->task_status = $request->status;
         
         // If task is completed, set the completed_at timestamp
-        if ($request->status == 'Completed') {
+        if ($request->status == 'completed') {
             $task->completed_at = now();
             
             // Also update the report status

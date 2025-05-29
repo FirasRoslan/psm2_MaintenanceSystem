@@ -26,8 +26,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('role:landlord')->group(function () {
     Route::get('/landlord/dashboard', [LandlordViewController::class, 'dashboard'])->name('landlord.dashboard');
     
+    // Add profile route
+    Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile.show');
+    
+    // Maintenance request routes
     // Maintenance request routes
     Route::get('/landlord/requests', [LandlordViewController::class, 'maintenanceRequests'])->name('landlord.requests.index');
+    Route::get('/landlord/requests/{report}', [LandlordViewController::class, 'showRequest'])->name('landlord.requests.show');
     Route::put('/landlord/requests/{report}/status', [LandlordViewController::class, 'updateRequestStatus'])->name('landlord.requests.update-status');
     Route::get('/landlord/requests/{report}/assign', [LandlordViewController::class, 'showAssignTaskForm'])->name('landlord.requests.assign-task');
     Route::post('/landlord/requests/{report}/assign', [LandlordViewController::class, 'assignTask'])->name('landlord.requests.store-task');
@@ -70,6 +75,9 @@ Route::middleware('role:landlord')->group(function () {
             Route::get('/landlord/contractors/{contractor}', [LandlordViewController::class, 'showContractor'])->name('landlord.contractors.show');
             Route::post('/landlord/contractors/{contractor}/approve', [LandlordViewController::class, 'approveContractor'])->name('landlord.contractors.approve');
             Route::post('/landlord/contractors/{contractor}/reject', [LandlordViewController::class, 'rejectContractor'])->name('landlord.contractors.reject');
+        
+            // Add the tasks route here with proper naming
+            Route::get('/landlord/tasks', [LandlordViewController::class, 'tasks'])->name('landlord.tasks.index');
         });
     });
 });
@@ -103,6 +111,7 @@ Route::middleware('role:contractor')->group(function () {
 
 // Add these routes if they're not already present
 // Landlord routes
+// Add the history route to the landlord routes group
 Route::middleware(['auth', 'role:landlord'])->prefix('landlord')->name('landlord.')->group(function () {
     // Properties
     Route::get('/properties', [PropertyController::class, 'showHouses'])->name('properties.index');
@@ -130,6 +139,13 @@ Route::middleware(['auth', 'role:landlord'])->prefix('landlord')->name('landlord
     Route::get('/tenants/{tenant:userID}/edit', [PropertyController::class, 'editTenant'])->name('tenants.edit');
     Route::put('/tenants/{tenant:userID}', [PropertyController::class, 'updateTenant'])->name('tenants.update');
     Route::delete('/tenants/{tenant:userID}', [PropertyController::class, 'deleteTenant'])->name('tenants.delete');
+    
+    // Add the history route here
+    // Make sure this route exists in your landlord route group
+    Route::get('/history', [LandlordViewController::class, 'history'])->name('history.index');
+    
+    // Tasks
+    Route::get('/tasks', [LandlordViewController::class, 'tasks'])->name('tasks.index');
 });
 
 // Tenant routes

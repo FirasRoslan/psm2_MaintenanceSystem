@@ -33,4 +33,32 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'userID');
     }
+
+    public function phases()
+    {
+        return $this->hasMany(Phase::class, 'taskID');
+    }
+    
+    /**
+     * Get the progress percentage based on completed phases
+     */
+    public function getProgressPercentageAttribute()
+    {
+        $totalPhases = $this->phases()->count();
+        if ($totalPhases === 0) return 0;
+        
+        $completedPhases = $this->phases()->where('phase_status', 'completed')->count();
+        return round(($completedPhases / $totalPhases) * 100);
+    }
+    
+    /**
+     * Get the current active phase
+     */
+    public function getCurrentPhaseAttribute()
+    {
+        return $this->phases()
+            ->where('phase_status', 'in_progress')
+            ->orderBy('arrangement_number')
+            ->first();
+    }
 }
