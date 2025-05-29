@@ -105,7 +105,7 @@ class LandlordViewController extends Controller
         // Get reports from houses owned by this landlord
         $reports = Report::whereHas('room.house', function($query) use ($user) {
             $query->where('userID', $user->userID);
-        })->with(['room.house', 'item', 'user'])->latest()->get();
+        })->with(['room.house', 'item', 'user'])->latest()->paginate(10);
         
         return view('landlord.requests.index', compact('reports'));
     }

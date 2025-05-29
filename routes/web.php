@@ -149,7 +149,6 @@ Route::middleware(['auth', 'role:landlord'])->prefix('landlord')->name('landlord
 });
 
 // Tenant routes
-// Inside the tenant routes group
 Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->group(function () {
     Route::get('/dashboard', [TenantViewController::class, 'dashboard'])->name('dashboard');
     Route::get('/find-houses', [TenantViewController::class, 'findHouses'])->name('find-houses');
@@ -160,10 +159,11 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('/properties/{house}', [TenantViewController::class, 'showProperty'])->name('properties.show');
     
     // Reports
+    Route::get('/reports/create', [TenantController::class, 'createReport'])->name('reports.create');
     Route::post('/reports', [TenantController::class, 'storeReport'])->name('reports.store');
     Route::get('/reports', [TenantController::class, 'showReports'])->name('reports.index');
     Route::get('/properties/rooms/{room}/items', [TenantController::class, 'getRoomItems'])->name('properties.rooms.items');
-}); // Added the missing closing brace here
+});
 
 // Add this route for general dashboard redirection
 Route::middleware(['auth'])->get('/dashboard', function () {

@@ -35,6 +35,15 @@
             line-height: 1.6;
         }
 
+        /* Auth page specific styles */
+        .auth-body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Top Header Styles */
         .top-header {
             position: fixed;
@@ -175,6 +184,14 @@
             width: calc(100% - 80px);
         }
 
+        /* Auth page content - full width */
+        #content.auth-content {
+            margin-left: 0;
+            margin-top: 0;
+            width: 100%;
+            min-height: 100vh;
+        }
+
         .sidebar-brand {
             padding: 2rem 1.5rem;
             text-align: center;
@@ -198,107 +215,93 @@
         }
 
         .sidebar-link {
-            padding: 0.875rem 1.5rem;
-            color: rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: all 0.3s ease;
             border-radius: 0;
-            margin: 0.25rem 0;
-            position: relative;
-            white-space: nowrap;
+            margin: 0.25rem 1rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sidebar-link i {
+            margin-right: 1rem;
+            width: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
         }
 
         #sidebar.collapsed .sidebar-link {
-            padding: 0.875rem 1rem;
+            padding: 1rem 0.5rem;
             justify-content: center;
+            margin: 0.25rem 0.5rem;
         }
 
         #sidebar.collapsed .sidebar-link span {
             display: none;
         }
 
-        .sidebar-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            transform: translateX(4px);
-        }
-
-        #sidebar.collapsed .sidebar-link:hover {
-            transform: none;
-        }
-
-        .sidebar-link.active {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            border-left: 4px solid #fbbf24;
-        }
-
-        #sidebar.collapsed .sidebar-link.active {
-            border-left: none;
-            border-radius: 8px;
-            margin: 0.25rem 0.5rem;
-        }
-
-        .sidebar-link i {
-            width: 20px;
-            margin-right: 0.75rem;
-            font-size: 1rem;
-            text-align: center;
-        }
-
         #sidebar.collapsed .sidebar-link i {
             margin-right: 0;
+            font-size: 1.2rem;
         }
-        
+
         .card {
             border-radius: 16px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
+            border: none;
+            box-shadow: var(--shadow-md);
             transition: all 0.3s ease;
         }
-        
+
         .card:hover {
-            box-shadow: var(--shadow-md);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
-        
+
         .card-header {
-            background-color: white;
             border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
+            background: white;
             border-radius: 16px 16px 0 0 !important;
+            padding: 1.5rem;
         }
 
-        .stats-card {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
+        .card-body {
+            padding: 1.5rem;
         }
 
-        .stats-card.success {
-            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        .form-control {
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
         }
 
-        .stats-card.warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
         }
 
-        .stats-card.info {
-            background: linear-gradient(135deg, var(--info-color) 0%, #2563eb 100%);
-        }
-
-        .icon-box {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+        .form-label {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
 
         .btn {
@@ -371,7 +374,8 @@
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="@if(request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*')) auth-body @endif">
+    @if(auth()->check())
     <div class="d-flex">
         <!-- Sidebar -->
         <div id="sidebar" class="bg-gradient-primary">
@@ -386,7 +390,6 @@
                 </button>
             </div>
             
-            @auth
             <div class="profile-dropdown">
                 <button class="profile-btn" onclick="toggleProfileDropdown()">
                     <i class="fas fa-user"></i>
@@ -405,7 +408,6 @@
                     </form>
                 </div>
             </div>
-            @endauth
         </div>
 
         <!-- Main Content -->
@@ -415,6 +417,12 @@
             </div>
         </div>
     </div>
+    @else
+    <!-- Auth pages content - no sidebar -->
+    <div id="content" class="auth-content">
+        @yield('content')
+    </div>
+    @endif
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -428,7 +436,7 @@
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const dropdown = document.querySelector('.profile-dropdown');
-            if (!dropdown.contains(event.target)) {
+            if (dropdown && !dropdown.contains(event.target)) {
                 dropdown.classList.remove('show');
             }
         });
@@ -458,12 +466,12 @@
             
             if (window.innerWidth > 768) {
                 // Remove mobile classes on desktop
-                sidebar.classList.remove('mobile-active');
+                if (sidebar) sidebar.classList.remove('mobile-active');
             } else {
                 // Remove desktop classes on mobile
-                sidebar.classList.remove('collapsed');
-                content.classList.remove('expanded');
-                header.classList.remove('expanded');
+                if (sidebar) sidebar.classList.remove('collapsed');
+                if (content) content.classList.remove('expanded');
+                if (header) header.classList.remove('expanded');
             }
         });
     </script>

@@ -3,349 +3,675 @@
 @section('title', 'Tenant Dashboard')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 class="mb-1">Tenant Dashboard</h4>
-                    <p class="text-muted mb-0">Welcome back, {{ auth()->user()->name }}</p>
+<div class="dashboard-container">
+    <!-- Enhanced Header Section -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="welcome-section">
+                    <h1 class="dashboard-title mb-2">
+                        <span class="greeting-text">Good {{ date('H') < 12 ? 'Morning' : (date('H') < 18 ? 'Afternoon' : 'Evening') }}!</span>
+                        <span class="wave-emoji">👋</span>
+                    </h1>
+                    <p class="dashboard-subtitle mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        {{ now()->format('l, F j, Y') }}
+                    </p>
                 </div>
             </div>
-            
-            @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
-                <div class="d-flex">
-                    <div class="me-3">
-                        <i class="fas fa-check-circle fa-lg"></i>
-                    </div>
-                    <div>
-                        <strong>Success!</strong> {{ session('success') }}
-                    </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="dashboard-actions">
+                    <button class="btn btn-modern-primary" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh Dashboard
+                    </button>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            @endif
-            
-            @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
-                <div class="d-flex">
-                    <div class="me-3">
-                        <i class="fas fa-exclamation-circle fa-lg"></i>
-                    </div>
-                    <div>
-                        <strong>Error!</strong> {{ session('error') }}
-                    </div>
+        </div>
+        
+        <!-- Enhanced Welcome Alert -->
+        <div class="welcome-alert mt-4">
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <i class="fas fa-home"></i>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="alert-text">
+                    <h6 class="mb-1">Welcome to your Tenant Dashboard</h6>
+                    <p class="mb-0">Manage your rental properties, submit maintenance requests, and track your housing status all in one place.</p>
+                </div>
             </div>
-            @endif
-            
-            <!-- Property Status Summary -->
-            <div class="row mb-4">
-                <div class="col-md-4 mb-4 mb-md-0">
-                    <div class="card border-0 shadow-sm rounded-4 h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="icon-box bg-success-light me-3">
-                                    <i class="fas fa-home text-success"></i>
-                                </div>
-                                <h5 class="mb-0">Approved Properties</h5>
+        </div>
+        
+        <!-- Enhanced Notifications -->
+        @if($pendingHouses->count() > 0)
+        <div class="notification-card tenant-notification mt-3">
+            <div class="notification-content">
+                <div class="notification-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="notification-text">
+                    <h6 class="notification-title">Pending House Requests</h6>
+                    <p class="notification-desc">{{ $pendingHouses->count() }} house assignment {{ Str::plural('request', $pendingHouses->count()) }} awaiting landlord approval.</p>
+                    <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-notification">
+                        <i class="fas fa-eye me-1"></i> View Requests
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endif
+        
+        @if($maintenanceReports->count() > 0)
+        <div class="notification-card contractor-notification mt-3">
+            <div class="notification-content">
+                <div class="notification-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="notification-text">
+                    <h6 class="notification-title">Active Maintenance Reports</h6>
+                    <p class="notification-desc">{{ $maintenanceReports->count() }} maintenance {{ Str::plural('request', $maintenanceReports->count()) }} currently being processed.</p>
+                    <a href="{{ route('tenant.reports.index') }}" class="btn btn-notification">
+                        <i class="fas fa-clipboard-list me-1"></i> View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endif
+    </div>
+
+    <!-- Enhanced Stats Cards -->
+    <div class="stats-section mb-5">
+        <div class="section-header mb-4">
+            <h3 class="section-title">Property Overview</h3>
+            <p class="section-subtitle">Your housing status at a glance</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="modern-stat-card properties-card">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ $approvedHouses->count() }}</div>
+                            <div class="stat-label">Approved Properties</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> Active
                             </div>
-                            <h2 class="mb-3">{{ $approvedHouses->count() }}</h2>
-                            <p class="text-muted mb-0">Properties you have access to</p>
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-md-4 mb-4 mb-md-0">
-                    <div class="card border-0 shadow-sm rounded-4 h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="icon-box bg-warning-light me-3">
-                                    <i class="fas fa-clock text-warning"></i>
-                                </div>
-                                <h5 class="mb-0">Pending Requests</h5>
-                            </div>
-                            <h2 class="mb-3">{{ $pendingHouses->count() }}</h2>
-                            <p class="text-muted mb-0">Properties awaiting landlord approval</p>
+            </div>
+            
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="modern-stat-card tenants-card">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm rounded-4 h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="icon-box bg-info-light me-3">
-                                    <i class="fas fa-tools text-info"></i>
-                                </div>
-                                <h5 class="mb-0">Maintenance Reports</h5>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ $pendingHouses->count() }}</div>
+                            <div class="stat-label">Pending Requests</div>
+                            <div class="stat-trend warning">
+                                <i class="fas fa-hourglass-half"></i> Waiting
                             </div>
-                            <h2 class="mb-3">{{ $maintenanceReports->count() }}</h2>
-                            <p class="text-muted mb-0">Active maintenance requests</p>
                         </div>
                     </div>
                 </div>
             </div>
             
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="modern-stat-card reports-card">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ $maintenanceReports->count() }}</div>
+                            <div class="stat-label">Maintenance Reports</div>
+                            <div class="stat-trend info">
+                                <i class="fas fa-wrench"></i> Active
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Status Pie Chart -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
             <!-- Quick Actions -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm rounded-4">
-                        <div class="card-body p-4">
-                            <h5 class="mb-3">Quick Actions</h5>
-                            <div class="row">
-                                <div class="col-md-3 col-6 mb-3 mb-md-0">
-                                    <a href="{{ route('tenant.find-houses') }}" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center">
-                                        <i class="fas fa-search fa-2x mb-3 text-primary"></i>
-                                        <span>Find Properties</span>
-                                    </a>
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Quick Actions</h5>
+                    <div class="row g-3">
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{{ route('tenant.find-houses') }}" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center hover-lift text-decoration-none">
+                                <div class="icon-box bg-primary bg-opacity-10 p-3 rounded-3 mb-3">
+                                    <i class="fas fa-search text-primary fa-2x"></i>
                                 </div>
-                                <div class="col-md-3 col-6 mb-3 mb-md-0">
-                                    <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center">
-                                        <i class="fas fa-home fa-2x mb-3 text-success"></i>
-                                        <span>My Properties</span>
-                                    </a>
+                                <h6 class="fw-bold text-dark mb-2">Find Properties</h6>
+                                <p class="text-muted text-center mb-0 small">Discover available rental properties</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center hover-lift text-decoration-none">
+                                <div class="icon-box bg-success bg-opacity-10 p-3 rounded-3 mb-3">
+                                    <i class="fas fa-home text-success fa-2x"></i>
                                 </div>
-                                <div class="col-md-3 col-6">
-                                    <a href="{{ route('tenant.reports.index') }}" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center">
-                                        <i class="fas fa-clipboard-list fa-2x mb-3 text-info"></i>
-                                        <span>My Reports</span>
-                                    </a>
+                                <h6 class="fw-bold text-dark mb-2">My Properties</h6>
+                                <p class="text-muted text-center mb-0 small">View your assigned properties</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{{ route('tenant.reports.create') }}" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center hover-lift text-decoration-none">
+                                <div class="icon-box bg-warning bg-opacity-10 p-3 rounded-3 mb-3">
+                                    <i class="fas fa-plus-circle text-warning fa-2x"></i>
                                 </div>
-                                <div class="col-md-3 col-6">
-                                    <a href="#" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center">
-                                        <i class="fas fa-user-cog fa-2x mb-3 text-secondary"></i>
-                                        <span>My Profile</span>
-                                    </a>
+                                <h6 class="fw-bold text-dark mb-2">Submit Report</h6>
+                                <p class="text-muted text-center mb-0 small">Report maintenance issues</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{{ route('tenant.reports.index') }}" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center hover-lift text-decoration-none">
+                                <div class="icon-box bg-info bg-opacity-10 p-3 rounded-3 mb-3">
+                                    <i class="fas fa-clipboard-list text-info fa-2x"></i>
                                 </div>
-                            </div>
+                                <h6 class="fw-bold text-dark mb-2">My Reports</h6>
+                                <p class="text-muted text-center mb-0 small">Track maintenance requests</p>
+                            </a>
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- My Properties Section -->
-            @if($approvedHouses->count() > 0)
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm rounded-4">
-                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center p-4">
-                            <h5 class="mb-0">My Properties</h5>
-                            <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="row g-0">
-                                @foreach($approvedHouses->take(3) as $house)
-                                <div class="col-md-4 position-relative">
-                                    <div class="property-card h-100 p-4 {{ !$loop->last ? 'border-end' : '' }}">
-                                        <div class="d-flex mb-3">
-                                            <div class="property-image me-3">
-                                                <img src="{{ asset('storage/' . $house->house_image) }}" alt="Property" class="rounded-4" width="80" height="80" style="object-fit: cover;">
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-1">{{ \Illuminate\Support\Str::limit($house->house_address, 30) }}</h6>
-                                                <p class="text-muted mb-0 small">{{ $house->rooms->count() }} rooms, {{ $house->house_number_toilet }} bathrooms</p>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <div class="avatar-sm me-2 bg-primary text-white">
-                                                    {{ substr($house->user->name, 0, 1) }}
-                                                </div>
-                                                <div>
-                                                    <p class="mb-0 small">Landlord: <strong>{{ $house->user->name }}</strong></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <a href="{{ route('tenant.properties.show', $house->houseID) }}" class="btn btn-sm btn-primary rounded-pill w-100">
-                                            <i class="fas fa-eye me-1"></i> View Details
-                                        </a>
-                                    </div>
+                        <div class="col-lg-3 col-md-6">
+                            <a href="#" class="btn btn-light rounded-4 w-100 h-100 p-4 d-flex flex-column align-items-center justify-content-center hover-lift text-decoration-none">
+                                <div class="icon-box bg-secondary bg-opacity-10 p-3 rounded-3 mb-3">
+                                    <i class="fas fa-user text-secondary fa-2x"></i>
                                 </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-            
-            <!-- Recent Maintenance Reports -->
-            @if($maintenanceReports->count() > 0)
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm rounded-4">
-                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center p-4">
-                            <h5 class="mb-0">Recent Maintenance Reports</h5>
-                            <a href="{{ route('tenant.reports.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Property</th>
-                                            <th>Item</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($maintenanceReports->take(3) as $report)
-                                        <tr>
-                                            <td>{{ $report->created_at->format('M d, Y') }}</td>
-                                            <td>{{ \Illuminate\Support\Str::limit($report->room->house->house_address, 30) }}</td>
-                                            <td>{{ $report->item->item_name }}</td>
-                                            <td>
-                                                @if($report->report_status == 'Pending')
-                                                    <span class="badge bg-warning text-dark rounded-pill">Pending</span>
-                                                @elseif($report->report_status == 'In Progress')
-                                                    <span class="badge bg-info rounded-pill">In Progress</span>
-                                                @elseif($report->report_status == 'Completed')
-                                                    <span class="badge bg-success rounded-pill">Completed</span>
-                                                @elseif($report->report_status == 'Rejected')
-                                                    <span class="badge bg-danger rounded-pill">Rejected</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('tenant.reports.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                                                    <i class="fas fa-eye"></i> View
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-            
-            <!-- Pending Requests -->
-            @if($pendingHouses->count() > 0)
-            <div class="row">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm rounded-4">
-                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center p-4">
-                            <h5 class="mb-0">Pending Property Requests</h5>
-                            <span class="badge bg-warning text-dark rounded-pill px-3">{{ $pendingHouses->count() }}</span>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="list-group list-group-flush">
-                                @foreach($pendingHouses as $house)
-                                <div class="list-group-item border-0 p-4">
-                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                                        <div class="d-flex align-items-center mb-3 mb-md-0">
-                                            <div class="property-image me-3">
-                                                <img src="{{ asset('storage/' . $house->house_image) }}" alt="Property" class="rounded-4" width="60" height="60" style="object-fit: cover;">
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-1">{{ \Illuminate\Support\Str::limit($house->house_address, 30) }}</h6>
-                                                <p class="text-muted mb-0 small">Landlord: {{ $house->user->name }}</p>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-warning text-dark rounded-pill mb-2 mb-md-0 me-md-2">
-                                                <i class="fas fa-clock me-1"></i> Awaiting Approval
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-            
-            <!-- No Properties Message -->
-            @if($approvedHouses->count() == 0 && $pendingHouses->count() == 0)
-            <div class="row">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm rounded-4">
-                        <div class="card-body p-5 text-center">
-                            <div class="empty-state-icon mb-4">
-                                <i class="fas fa-home"></i>
-                            </div>
-                            <h5>No Properties Yet</h5>
-                            <p class="text-muted mb-4">You haven't been assigned to any properties yet. Start by finding available properties.</p>
-                            <a href="{{ route('tenant.find-houses') }}" class="btn btn-primary rounded-pill px-4">
-                                <i class="fas fa-search me-2"></i>Find Properties
+                                <h6 class="fw-bold text-dark mb-2">My Profile</h6>
+                                <p class="text-muted text-center mb-0 small">Update your information</p>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
-            @endif
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Property Status Overview</h5>
+                    <div class="position-relative">
+                        <canvas id="propertyStatusChart" width="300" height="300"></canvas>
+                    </div>
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                <span class="text-muted">Approved</span>
+                            </div>
+                            <span class="fw-bold">{{ $approvedHouses->count() }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                <span class="text-muted">Pending</span>
+                            </div>
+                            <span class="fw-bold">{{ $pendingHouses->count() }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                <span class="text-muted">Maintenance</span>
+                            </div>
+                            <span class="fw-bold">{{ $maintenanceReports->count() }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    
+    <!-- Recent Properties -->
+    @if($approvedHouses->count() > 0)
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">My Properties</h5>
+                        <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-outline-primary rounded-pill px-4">
+                            <i class="fas fa-eye me-2"></i>View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        @foreach($approvedHouses->take(3) as $house)
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card border-0 shadow-sm rounded-3 h-100 hover-lift">
+                                <div class="position-relative">
+                                    <img src="{{ asset('storage/' . $house->house_image) }}" class="card-img-top rounded-top-3" alt="{{ $house->house_address }}" style="height: 180px; object-fit: cover;">
+                                    <div class="position-absolute top-0 start-0 m-3">
+                                        <span class="badge bg-success bg-opacity-90 text-white px-3 py-2 rounded-pill">
+                                            <i class="fas fa-check-circle me-1"></i>Approved
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3">
+                                    <h6 class="fw-bold mb-2">{{ Str::limit($house->house_address, 30) }}</h6>
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-bed text-primary me-2"></i>
+                                                <small class="text-muted">{{ $house->house_number_room }} rooms</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-bath text-info me-2"></i>
+                                                <small class="text-muted">{{ $house->house_number_toilet }} baths</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fas fa-user text-secondary me-2"></i>
+                                        <small class="text-muted">{{ $house->user->name }}</small>
+                                    </div>
+                                    <a href="{{ route('tenant.properties.show', $house->houseID) }}" class="btn btn-primary btn-sm rounded-pill w-100">
+                                        <i class="fas fa-eye me-1"></i>View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 @push('styles')
 <style>
-    .rounded-4 {
-        border-radius: 0.75rem !important;
+/* Modern Dashboard Styles */
+.dashboard-container {
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.dashboard-header {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.greeting-text {
+    display: inline-block;
+}
+
+.wave-emoji {
+    display: inline-block;
+    animation: wave 2s infinite;
+    transform-origin: 70% 70%;
+}
+
+@keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(20deg); }
+    75% { transform: rotate(-10deg); }
+}
+
+.dashboard-subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.btn-modern-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-modern-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+/* Welcome Alert */
+.welcome-alert {
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid #c7d2fe;
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+}
+
+.alert-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: #6366f1;
+    font-size: 1.25rem;
+}
+
+.alert-text h6 {
+    color: #3730a3;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.alert-text p {
+    color: #5b21b6;
+    margin: 0;
+}
+
+/* Notification Cards */
+.notification-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.tenant-notification {
+    border-left-color: #f59e0b;
+}
+
+.contractor-notification {
+    border-left-color: #3b82f6;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+}
+
+.notification-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.5rem;
+}
+
+.tenant-notification .notification-icon {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.contractor-notification .notification-icon {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.notification-desc {
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.btn-notification {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-notification:hover {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+}
+
+/* Stats Section */
+.stats-section {
+    margin-bottom: 3rem;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+/* Modern Stat Cards */
+.modern-stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.modern-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card-body {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-right: 1.5rem;
+    position: relative;
+}
+
+.properties-card .stat-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.tenants-card .stat-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.reports-card .stat-icon {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.stat-trend {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.stat-trend.positive {
+    color: #10b981;
+}
+
+.stat-trend.warning {
+    color: #f59e0b;
+}
+
+.stat-trend.info {
+    color: #3b82f6;
+}
+
+.stat-trend i {
+    margin-right: 0.25rem;
+}
+
+/* Hover Effects */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
     }
     
-    .avatar-sm {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        font-weight: bold;
+    .dashboard-header {
+        padding: 1.5rem;
     }
     
-    .icon-box {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
-    
-    .bg-success-light {
-        background-color: rgba(25, 135, 84, 0.1);
-    }
-    
-    .bg-warning-light {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-    
-    .bg-info-light {
-        background-color: rgba(13, 202, 240, 0.1);
-    }
-    
-    .property-card {
-        transition: all 0.3s ease;
-    }
-    
-    .property-card:hover {
-        background-color: #f8f9fa;
-    }
-    
-    .empty-state-icon {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background-color: #f8f9fa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
+    .dashboard-title {
         font-size: 2rem;
-        color: #adb5bd;
     }
+    
+    .stat-card-body {
+        padding: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stat-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+}
 </style>
 @endpush
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Property Status Pie Chart
+const ctx = document.getElementById('propertyStatusChart').getContext('2d');
+const propertyStatusChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Approved', 'Pending', 'Maintenance'],
+        datasets: [{
+            data: [{{ $approvedHouses->count() }}, {{ $pendingHouses->count() }}, {{ $maintenanceReports->count() }}],
+            backgroundColor: [
+                '#198754',
+                '#ffc107',
+                '#0dcaf0'
+            ],
+            borderWidth: 0,
+            cutout: '70%'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+
+<style>
+.hover-lift {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+}
+</style>
 @endsection

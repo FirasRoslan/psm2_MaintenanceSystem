@@ -65,4 +65,14 @@ class TenantController extends Controller
         $reports = Auth::user()->reports()->with(['room.house', 'item'])->latest()->get();
         return view('tenant.reports.index', compact('reports'));
     }
+    
+    public function createReport()
+    {
+        // Get tenant's approved houses with rooms and items
+        $houses = Auth::user()->approvedHouses()
+            ->with(['rooms.items', 'user'])
+            ->get();
+        
+        return view('tenant.reports.create', compact('houses'));
+    }
 }

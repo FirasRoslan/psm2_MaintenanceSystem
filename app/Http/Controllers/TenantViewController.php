@@ -32,12 +32,23 @@ class TenantViewController extends Controller
         return view('tenant.dashboard', compact('approvedHouses', 'pendingHouses', 'maintenanceReports'));
     }
     
-    public function findHouses()
+    public function findHouses(Request $request)
     {
-        // Get all houses that are available
-        $houses = House::with('user')->get();
+        // Get search query from request
+        $search = $request->get('search');
         
-        return view('tenant.find-houses', compact('houses'));
+        // Build query for houses
+        $query = House::with('user');
+        
+        // Apply search filter if search term exists
+        if ($search) {
+            $query->where('house_address', 'LIKE', '%' . $search . '%');
+        }
+        
+        // Get filtered houses
+        $houses = $query->get();
+        
+        return view('tenant.find-houses', compact('houses', 'search'));
     }
     
     public function requestHouse(Request $request)
@@ -148,5 +159,15 @@ class TenantViewController extends Controller
                     ->get();
         
         return view('tenant.reports.index', compact('reports'));
+    }
+    
+    public function viewAssignedHouses()
+    {
+        $user = Auth::user();
+        
+        // Get all houses assigned to this tenant (both pending and approved)
+        $houses = $user->tenantHouses()->with('user')->get();
+        
+        return view('tenant.assigned-houses', compact('houses'));
     }
 }
