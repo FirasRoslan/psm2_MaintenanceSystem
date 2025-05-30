@@ -545,7 +545,7 @@
                         </div>
                         <div class="role-content">
                             <h3>Landlords</h3>
-                            <p>Are you an independent landlord managing your own properties? Make juggling your daily tasks easier and more organized.</p>
+                            <p>Manage your rental properties with ease. Add your property, receive maintenance reports from tenants, and assign tasks directly to contractors — all in one place.</p>
                             <a href="#" class="role-link">More <i class="fas fa-arrow-right ms-1"></i></a>
                         </div>
                     </div>
@@ -557,7 +557,7 @@
                         </div>
                         <div class="role-content">
                             <h3>Tenants</h3>
-                            <p>Give tenants their own space with a separate portal built just for them. Tenants can collect rent online, manage maintenance requests, and more.</p>
+                            <p>Easily report any house issues like leaking pipes or broken lights. Upload photos, track progress, and get notified when the problem is fixed.</p>
                             <a href="#" class="role-link">More <i class="fas fa-arrow-right ms-1"></i></a>
                         </div>
                     </div>
@@ -569,7 +569,7 @@
                         </div>
                         <div class="role-content">
                             <h3>Contractors</h3>
-                            <p>Got a service professional you love working with? Invite them to sign up and assign requests and send payments inside the platform.</p>
+                            <p>Get assigned to maintenance tasks by landlords. Update task status, communicate directly, and complete jobs efficiently through the system.</p>
                             <a href="#" class="role-link">More <i class="fas fa-arrow-right ms-1"></i></a>
                         </div>
                     </div>
