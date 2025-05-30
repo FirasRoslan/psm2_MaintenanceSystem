@@ -4,16 +4,42 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h2 class="fw-bold text-dark mb-2">Available Properties</h2>
-            <p class="text-muted mb-0 fs-5">Discover and request rental properties</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('tenant.dashboard') }}" class="btn btn-outline-primary rounded-pill px-4">
-                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-            </a>
+    <!-- Modern Header Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('tenant.dashboard') }}" class="text-white text-decoration-none opacity-75">
+                                    <i class="fas fa-home me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active text-white" aria-current="page">
+                                Available Properties
+                            </li>
+                        </ol>
+                    </nav>
+                    
+                    <!-- Title Section -->
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-container me-3">
+                            <i class="fas fa-search text-white fa-2x"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-white fw-bold mb-1 display-6">Available Properties</h1>
+                            <p class="text-white opacity-90 mb-0 fs-5">Discover and request rental properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ route('tenant.dashboard') }}" class="btn btn-light rounded-pill px-4 py-2 shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -227,94 +253,148 @@
     @endif
 </div>
 
+@push('styles')
 <style>
-.search-card {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-.search-icon {
-    width: 60px;
-    height: 60px;
-}
-
-.search-form .form-control {
-    border: 2px solid #e9ecef;
-    border-radius: 50px;
-    padding: 12px 20px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.search-form .form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
-}
-
-.search-form .input-group-text {
-    border: 2px solid #e9ecef;
-    border-radius: 50px 0 0 50px;
-    background: transparent;
-}
-
-.search-form .btn {
-    border-radius: 0 50px 50px 0;
-    border: 2px solid #0d6efd;
-    padding: 12px 24px;
-}
-
-.property-card {
-    transition: all 0.3s ease;
-}
-
-.property-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
-}
-
-.hover-lift {
-    transition: all 0.3s ease;
-}
-
-.hover-lift:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
-}
-
-.icon-box {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.search-results-info {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .search-form .input-group {
-        flex-direction: column;
+    /* Modern Header Styles */
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: bold;
     }
     
-    .search-form .input-group-text,
-    .search-form .form-control,
-    .search-form .btn {
-        border-radius: 25px;
+    .breadcrumb-item a:hover {
+        opacity: 1 !important;
+        text-decoration: underline !important;
+    }
+    
+    .icon-container {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .btn-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        transition: all 0.3s ease;
+    }
+    
+    /* Existing styles for search card and other elements */
+    .search-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .search-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .search-form .form-control {
         border: 2px solid #e9ecef;
+        border-radius: 50px;
+        padding: 12px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .search-form .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+    }
+
+    .search-form .input-group-text {
+        border: 2px solid #e9ecef;
+        border-radius: 50px 0 0 50px;
+        background: transparent;
+    }
+
+    .search-form .btn {
+        border-radius: 0 50px 50px 0;
+        border: 2px solid #0d6efd;
+        padding: 12px 24px;
+    }
+
+    .property-card {
+        transition: all 0.3s ease;
+    }
+
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    }
+
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    }
+
+    .icon-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-results-info {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
-    .search-form .btn {
-        margin-top: 10px;
-        border-color: #0d6efd;
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .display-6 {
+            font-size: 1.5rem;
+        }
+        
+        .icon-container {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .icon-container i {
+            font-size: 1.5rem !important;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-light {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.875rem;
+        }
+        
+        .search-form .input-group {
+            flex-direction: column;
+        }
+        
+        .search-form .input-group-text,
+        .search-form .form-control,
+        .search-form .btn {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .search-form .btn {
+            margin-top: 10px;
+            border-color: #0d6efd;
+        }
     }
-}
 </style>
+@endpush
 
 <script>
 // Add some interactive features

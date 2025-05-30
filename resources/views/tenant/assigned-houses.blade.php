@@ -4,16 +4,39 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h2 class="fw-bold text-dark mb-2">My Properties</h2>
-            <p class="text-muted mb-0 fs-5">Manage your assigned rental properties</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('tenant.dashboard') }}" class="btn btn-outline-primary rounded-pill px-4">
-                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-            </a>
+    <!-- Modern Card-Based Header -->
+    <div class="header-card mb-5">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-gradient-primary border-0 p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <!-- Breadcrumb -->
+                        <nav aria-label="breadcrumb" class="mb-2">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('tenant.dashboard') }}" class="text-white text-decoration-none opacity-75">
+                                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active text-white" aria-current="page">My Properties</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <a href="{{ route('tenant.dashboard') }}" class="btn btn-light btn-sm rounded-pill px-3 back-btn">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+                
+                <div class="d-flex align-items-center mt-3">
+                    <div class="icon-container me-3">
+                        <i class="fas fa-home fa-2x text-white"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold text-white mb-1 gradient-text">My Properties</h2>
+                        <p class="text-white opacity-75 mb-0 fs-6">Manage your assigned rental properties</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -135,7 +158,46 @@
     @endif
 </div>
 
+@push('styles')
 <style>
+/* Header Card Styling */
+.header-card .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.icon-container {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, #ffffff, #e3f2fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.back-btn {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Existing Styles */
 .hover-lift {
     transition: all 0.3s ease;
 }
@@ -150,5 +212,31 @@
     align-items: center;
     justify-content: center;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-card .card-header {
+        padding: 1.5rem !important;
+    }
+    
+    .header-card .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .back-btn {
+        margin-top: 1rem;
+        align-self: flex-end;
+    }
+    
+    .breadcrumb {
+        font-size: 0.875rem;
+    }
+    
+    .gradient-text {
+        font-size: 1.5rem !important;
+    }
+}
 </style>
+@endpush
 @endsection

@@ -4,16 +4,40 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h2 class="fw-bold text-dark mb-2">Submit Maintenance Report</h2>
-            <p class="text-muted mb-0 fs-5">Report maintenance issues in your assigned properties</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('tenant.dashboard') }}" class="btn btn-outline-primary rounded-pill px-4">
-                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-            </a>
+    <!-- Enhanced Header Section with Card Design -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="page-title-section">
+                    <nav aria-label="breadcrumb" class="mb-2">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('tenant.dashboard') }}" class="text-decoration-none">
+                                    <i class="fas fa-home me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('tenant.reports.index') }}" class="text-decoration-none">My Reports</a>
+                            </li>
+                            <li class="breadcrumb-item active">Submit Report</li>
+                        </ol>
+                    </nav>
+                    <h1 class="page-title mb-2">
+                        <i class="fas fa-tools me-3"></i>Submit Maintenance Report
+                    </h1>
+                    <p class="page-subtitle mb-0">Report maintenance issues in your assigned properties</p>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="page-actions">
+                    <a href="{{ route('tenant.reports.index') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-list me-2"></i>My Reports
+                    </a>
+                    <a href="{{ route('tenant.dashboard') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -218,6 +242,78 @@ document.getElementById('report_image').addEventListener('change', function(e) {
 .form-control:focus {
     border-color: #ffc107;
     box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+/* Page Header Card Design */
+.page-header {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.breadcrumb {
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary-dark);
+}
+
+.btn-modern-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-modern-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-actions {
+        margin-top: 1rem;
+    }
+    
+    .page-actions .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
 }
 </style>
 @endsection

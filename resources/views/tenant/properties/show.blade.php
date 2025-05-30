@@ -4,16 +4,42 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h2 class="fw-bold text-dark mb-2">{{ $house->house_address }}</h2>
-            <p class="text-muted mb-0 fs-5">Property Details & Room Management</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-outline-primary rounded-pill px-4">
-                <i class="fas fa-arrow-left me-2"></i>Back to My Properties
-            </a>
+    <!-- Modern Header Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('tenant.assigned-houses') }}" class="text-white text-decoration-none opacity-75">
+                                    <i class="fas fa-home me-1"></i>My Properties
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active text-white" aria-current="page">
+                                Property Details
+                            </li>
+                        </ol>
+                    </nav>
+                    
+                    <!-- Title Section -->
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-container me-3">
+                            <i class="fas fa-building text-white fa-2x"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-white fw-bold mb-1 display-6">{{ $house->house_address }}</h1>
+                            <p class="text-white opacity-90 mb-0 fs-5">Property Details & Room Management</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-light rounded-pill px-4 py-2 shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i>Back to My Properties
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -301,7 +327,64 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+@push('styles')
 <style>
+    /* Modern Header Styles */
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: bold;
+    }
+    
+    .breadcrumb-item a:hover {
+        opacity: 1 !important;
+        text-decoration: underline !important;
+    }
+    
+    .icon-container {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .btn-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        transition: all 0.3s ease;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .display-6 {
+            font-size: 1.5rem;
+        }
+        
+        .icon-container {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .icon-container i {
+            font-size: 1.5rem !important;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-light {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.875rem;
+        }
+    }
+</style>
+@endpush
+
 .hover-lift {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }

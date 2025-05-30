@@ -7,7 +7,7 @@
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|poppins:400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700|poppins:400,500,600,700" rel="stylesheet">
     
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,214 +15,327 @@
     
     <style>
         :root {
-            --primary-color: #0d6efd;
-            --primary-light: #e6f0ff;
-            --primary-dark: #0a58ca;
-            --secondary-color: #2c3e50;
-            --text-color: #333;
-            --light-gray: #f8f9fa;
-            --border-color: #dee2e6;
+            --primary-blue: #2563eb;
+            --primary-blue-light: #3b82f6;
+            --primary-blue-dark: #1d4ed8;
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-200: #bfdbfe;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
             line-height: 1.6;
-            overflow-x: hidden;
+            background-color: var(--white);
         }
         
+        /* Navigation */
         .navbar {
-            padding: 15px 0;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            backdrop-filter: blur(10px);
         }
         
         .navbar-brand {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1.5rem;
-            color: var(--primary-color);
+            color: var(--primary-blue);
+            text-decoration: none;
         }
         
-        .navbar-brand img {
-            height: 40px;
-            margin-right: 10px;
+        .navbar-brand:hover {
+            color: var(--primary-blue-dark);
         }
         
         .nav-link {
-            color: var(--secondary-color);
+            color: var(--gray-600);
             font-weight: 500;
-            margin: 0 10px;
-            transition: all 0.3s;
+            margin: 0 0.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
         
         .nav-link:hover {
-            color: var(--primary-color);
+            color: var(--primary-blue);
+        }
+        
+        .btn {
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            border: none;
+            cursor: pointer;
         }
         
         .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            padding: 10px 25px;
-            font-weight: 500;
-            border-radius: 5px;
-            transition: all 0.3s;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            box-shadow: var(--shadow-sm);
         }
         
         .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
+            background-color: var(--primary-blue-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+            color: var(--white);
         }
         
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-            padding: 10px 25px;
-            font-weight: 500;
-            border-radius: 5px;
-            transition: all 0.3s;
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
         }
         
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
+        .btn-outline:hover {
+            background-color: var(--primary-blue);
+            color: var(--white);
         }
         
+        /* Hero Section */
         .hero-section {
-            padding: 80px 0;
-            background-color: var(--primary-light);
-            position: relative;
-            overflow: hidden;
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--blue-50) 0%, var(--white) 100%);
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
         }
         
         .hero-content h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: var(--secondary-color);
-            margin-bottom: 20px;
-            line-height: 1.2;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
         }
         
         .hero-content p {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            color: #555;
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+            line-height: 1.7;
         }
         
         .hero-image {
             position: relative;
-            z-index: 1;
         }
         
         .hero-image img {
-            max-width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow-xl);
         }
         
+        /* Feature Cards */
         .feature-section {
-            padding: 80px 0;
-            background-color: white;
+            padding: 5rem 0;
+            background-color: var(--white);
         }
         
         .section-title {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 4rem;
         }
         
         .section-title h2 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--secondary-color);
-            margin-bottom: 15px;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
         }
         
         .section-title p {
-            font-size: 1.1rem;
-            color: #666;
-            max-width: 700px;
+            font-size: 1.125rem;
+            color: var(--gray-600);
+            max-width: 600px;
             margin: 0 auto;
         }
         
         .feature-card {
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s;
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
             height: 100%;
-            background-color: white;
-            border: 1px solid var(--border-color);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background-color: var(--primary-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        
-        .feature-icon i {
-            font-size: 30px;
-            color: var(--primary-color);
-        }
-        
-        .feature-card h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--secondary-color);
-        }
-        
-        .feature-card p {
-            color: #666;
-            margin-bottom: 0;
-        }
-        
-        .cta-section {
-            padding: 80px 0;
-            background-color: var(--primary-light);
             text-align: center;
         }
         
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--blue-200);
+        }
+        
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .feature-icon i {
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+        
+        /* Roles Section */
+        .roles-section {
+            padding: 5rem 0;
+            background-color: var(--gray-50);
+        }
+        
+        .role-card {
+            background-color: var(--white);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .role-image {
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .role-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .role-card:hover .role-image img {
+            transform: scale(1.05);
+        }
+        
+        .role-content {
+            padding: 2rem;
+        }
+        
+        .role-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+        
+        .role-content p {
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .role-link {
+            color: var(--primary-blue);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .role-link:hover {
+            color: var(--primary-blue-dark);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            text-align: center;
+            color: var(--white);
+        }
+        
         .cta-content h2 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--secondary-color);
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
         }
         
         .cta-content p {
-            font-size: 1.1rem;
-            color: #555;
-            max-width: 700px;
-            margin: 0 auto 30px;
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
+        .btn-white {
+            background-color: var(--white);
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        .btn-white:hover {
+            background-color: var(--gray-100);
+            color: var(--primary-blue-dark);
+        }
+        
+        /* Footer */
         .footer {
-            padding: 50px 0;
-            background-color: var(--secondary-color);
-            color: white;
+            padding: 3rem 0 2rem;
+            background-color: var(--gray-900);
+            color: var(--gray-200);
         }
         
         .footer-logo {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: white;
-            margin-bottom: 20px;
+            color: var(--white);
+            margin-bottom: 1rem;
         }
         
         .footer-links h4 {
-            font-size: 1.2rem;
+            font-size: 1.125rem;
             font-weight: 600;
-            margin-bottom: 20px;
+            color: var(--white);
+            margin-bottom: 1rem;
         }
         
         .footer-links ul {
@@ -231,67 +344,78 @@
         }
         
         .footer-links li {
-            margin-bottom: 10px;
+            margin-bottom: 0.5rem;
         }
         
         .footer-links a {
-            color: #ddd;
+            color: var(--gray-200);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
         }
         
         .footer-links a:hover {
-            color: var(--primary-color);
+            color: var(--primary-blue-light);
         }
         
         .social-icons {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
         
         .social-icons a {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: var(--gray-800);
+            border-radius: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            transition: all 0.3s;
+            color: var(--gray-200);
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
         
         .social-icons a:hover {
-            background-color: var(--primary-color);
+            background-color: var(--primary-blue);
+            color: var(--white);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            margin-top: 30px;
-            color: #aaa;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-800);
+            margin-top: 2rem;
+            color: var(--gray-600);
         }
         
-        @media (max-width: 991px) {
-            .hero-content {
-                text-align: center;
-                margin-bottom: 40px;
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
             }
             
-            .hero-image {
-                margin-top: 30px;
+            .hero-content {
+                text-align: center;
+                margin-bottom: 3rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .cta-content h2 {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="fas fa-home me-2" style="color: var(--primary-color); font-size: 1.8rem;"></i>
+                <i class="fas fa-home me-2" style="font-size: 1.5rem;"></i>
                 Parit Raja Rental
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -300,24 +424,18 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Features</a>
+                        <a class="nav-link" href="#features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">How It Works</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
+                        <a class="nav-link" href="#roles">Roles</a>
                     </li>
                 </ul>
-                <div class="ms-lg-3 mt-3 mt-lg-0 d-flex">
+                <div class="ms-lg-3 mt-3 mt-lg-0 d-flex gap-2">
                     @if (Route::has('login'))
                         @auth
                             <a href="{{ url('/dashboard') }}" class="btn btn-primary">Dashboard</a>
                         @else
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Log in</a>
+                            <a href="{{ route('login') }}" class="btn btn-outline">Log in</a>
                             @if (Route::has('register'))
                                 <a href="{{ route('register') }}" class="btn btn-primary">Sign up</a>
                             @endif
@@ -335,7 +453,7 @@
                 <div class="col-lg-6 hero-content">
                     <h1>Everything You Need to Manage Your Properties</h1>
                     <p>Easily manage rental maintenance, track reports from tenants, and assign tasks to contractors – all online, anytime.</p>
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-wrap gap-3">
                         <a href="{{ route('register') }}" class="btn btn-primary">Get Started</a>
                     </div>
                 </div>
@@ -347,14 +465,14 @@
     </section>
 
     <!-- Features Section -->
-    <section class="feature-section">
+    <section class="feature-section" id="features">
         <div class="container">
             <div class="section-title">
                 <h2>Simplify Your Property Management</h2>
                 <p>Our platform offers everything you need to manage your rental properties efficiently</p>
             </div>
             <div class="row g-4">
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-tools"></i>
@@ -363,7 +481,7 @@
                         <p>Tenants can easily report issues like plumbing or electrical problems. Reports include descriptions and photos, helping landlords take quick action.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-tasks"></i>
@@ -372,7 +490,7 @@
                         <p>Landlords can assign maintenance tasks directly to contractors and monitor progress in real-time for better task tracking and accountability.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-home"></i>
@@ -381,7 +499,7 @@
                         <p>Landlords can add and update property details such as address, facilities provided, and tenant info for easier portfolio tracking.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-bell"></i>
@@ -390,7 +508,7 @@
                         <p>Instant notifications keep landlords, tenants, and contractors informed about task updates, new reports, and system alerts.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-history"></i>
@@ -399,7 +517,7 @@
                         <p>Every completed task is stored in the history module, helping landlords review past issues and improve future property maintenance.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-user-lock"></i>
@@ -412,13 +530,61 @@
         </div>
     </section>
 
+    <!-- Roles Section -->
+    <section class="roles-section" id="roles">
+        <div class="container">
+            <div class="section-title">
+                <h2>Built for Every User</h2>
+                <p>Our platform is designed to serve different user roles with tailored features and interfaces</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="role-card">
+                        <div class="role-image">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Landlord" class="img-fluid">
+                        </div>
+                        <div class="role-content">
+                            <h3>Landlords</h3>
+                            <p>Are you an independent landlord managing your own properties? Make juggling your daily tasks easier and more organized.</p>
+                            <a href="#" class="role-link">More <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="role-card">
+                        <div class="role-image">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tenant" class="img-fluid">
+                        </div>
+                        <div class="role-content">
+                            <h3>Tenants</h3>
+                            <p>Give tenants their own space with a separate portal built just for them. Tenants can collect rent online, manage maintenance requests, and more.</p>
+                            <a href="#" class="role-link">More <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="role-card">
+                        <div class="role-image">
+                            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Contractor" class="img-fluid">
+                        </div>
+                        <div class="role-content">
+                            <h3>Contractors</h3>
+                            <p>Got a service professional you love working with? Invite them to sign up and assign requests and send payments inside the platform.</p>
+                            <a href="#" class="role-link">More <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
             <div class="cta-content">
                 <h2>Ready to Streamline Your Property Management?</h2>
                 <p>A web-based system that helps landlords manage property maintenance, track tenant requests, and assign tasks to contractors – all in one place.</p>
-                <a href="{{ route('register') }}" class="btn btn-primary">Get Started Today</a>
+                <a href="{{ route('register') }}" class="btn btn-white">Get Started Today</a>
             </div>
         </div>
     </section>

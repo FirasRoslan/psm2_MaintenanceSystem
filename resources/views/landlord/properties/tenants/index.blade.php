@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid px-4 py-4">
-    <!-- Enhanced Header Section -->
+    <!-- Enhanced Header Section - Kept the same as requested -->
     <div class="page-header mb-4">
         <div class="row align-items-center">
             <div class="col-lg-8">
@@ -53,102 +53,150 @@
     </div>
     @endif
 
-    <!-- Tenants Grid -->
-    <div class="tenants-grid">
-        @forelse($tenants as $tenant)
-            <div class="tenant-card fade-in">
-                <div class="tenant-header">
-                    <div class="tenant-avatar-container">
-                        <div class="tenant-avatar">
-                            <span class="avatar-initials">{{ substr($tenant->name, 0, 1) }}</span>
-                        </div>
-                        <div class="tenant-status">
-                            <span class="status-badge bg-{{ $tenant->approval_status == 'active' ? 'success' : 'danger' }}-subtle text-{{ $tenant->approval_status == 'active' ? 'success' : 'danger' }}">
-                                <i class="fas fa-{{ $tenant->approval_status == 'active' ? 'check-circle' : 'times-circle' }} me-1"></i>
-                                {{ ucfirst($tenant->approval_status) }}
-                            </span>
-                        </div>
+    <!-- Tenants List Card -->
+    <div class="card border-0 shadow-sm tenant-list-card">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold">Your Tenants</h5>
+                </div>
+                <div class="search-filter">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" id="tenantSearch" class="form-control border-0 bg-light" placeholder="Search tenants...">
                     </div>
                 </div>
-                
-                <div class="tenant-content">
-                    <div class="tenant-info">
-                        <h5 class="tenant-name">{{ $tenant->name }}</h5>
-                        <div class="contact-details">
-                            <div class="contact-item">
-                                <i class="fas fa-envelope me-2"></i>
-                                <span>{{ $tenant->email }}</span>
-                            </div>
-                            <div class="contact-item">
-                                <i class="fas fa-phone me-2"></i>
-                                <span>{{ $tenant->phone }}</span>
-                            </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if($tenants->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 tenant-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Tenant</th>
+                                <th>Contact Information</th>
+                                <th>Assigned Property</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($tenants as $tenant)
+                                <tr class="tenant-row fade-in">
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="tenant-avatar me-3">
+                                                <span class="avatar-initials">{{ substr($tenant->name, 0, 1) }}</span>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-semibold">{{ $tenant->name }}</h6>
+                                                <span class="tenant-id text-muted">ID: {{ $tenant->userID }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="fas fa-envelope text-primary me-2"></i>
+                                                <span>{{ $tenant->email }}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-phone text-primary me-2"></i>
+                                                <span>{{ $tenant->phone }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($tenant->tenantHouses->count() > 0)
+                                            @php
+                                                $house = $tenant->tenantHouses->first();
+                                                $pivotStatus = $house->pivot->approval_status;
+                                                $statusText = $pivotStatus === true ? 'Approved' : ($pivotStatus === false ? 'Rejected' : 'Pending');
+                                                $statusColor = $pivotStatus === true ? 'success' : ($pivotStatus === false ? 'danger' : 'warning');
+                                            @endphp
+                                            <div class="property-info d-flex align-items-center">
+                                                <div class="property-image-small me-3">
+                                                    <img src="{{ asset('storage/' . $house->house_image) }}" alt="Property" class="property-thumbnail">
+                                                </div>
+                                                <div>
+                                                    <p class="property-address mb-0">{{ $house->house_address }}</p>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="no-property d-flex align-items-center">
+                                                <i class="fas fa-home text-muted me-2"></i>
+                                                <span class="text-muted">No property assigned</span>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="status-badge bg-{{ $tenant->approval_status == 'active' ? 'success' : 'danger' }}-subtle text-{{ $tenant->approval_status == 'active' ? 'success' : 'danger' }}">
+                                            <i class="fas fa-{{ $tenant->approval_status == 'active' ? 'check-circle' : 'times-circle' }} me-1"></i>
+                                            {{ ucfirst($tenant->approval_status) }}
+                                        </span>
+                                        
+                                        @if($tenant->tenantHouses->count() > 0)
+                                            @php
+                                                $house = $tenant->tenantHouses->first();
+                                                $pivotStatus = $house->pivot->approval_status;
+                                                $statusText = $pivotStatus === true ? 'Approved' : ($pivotStatus === false ? 'Rejected' : 'Pending');
+                                                $statusColor = $pivotStatus === true ? 'success' : ($pivotStatus === false ? 'danger' : 'warning');
+                                            @endphp
+                                            <span class="assignment-status d-block mt-2 bg-{{ $statusColor }}-subtle text-{{ $statusColor }}">
+                                                <i class="fas fa-{{ $statusColor == 'success' ? 'check-circle' : ($statusColor == 'danger' ? 'times-circle' : 'clock') }} me-1"></i>
+                                                {{ $statusText }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="action-buttons">
+                                            <a href="{{ route('landlord.tenants.show', $tenant->userID) }}" 
+                                               class="btn btn-sm btn-outline-primary me-2" 
+                                               data-bs-toggle="tooltip" 
+                                               title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('landlord.tenants.edit', $tenant->userID) }}" 
+                                               class="btn btn-sm btn-outline-secondary me-2"
+                                               data-bs-toggle="tooltip" 
+                                               title="Edit Tenant">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    onclick="confirmDelete({{ $tenant->userID }})"
+                                                    data-bs-toggle="tooltip" 
+                                                    title="Delete Tenant">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="empty-state">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-users"></i>
                         </div>
-                    </div>
-
-                    <!-- Property Assignment Preview -->
-                    <div class="property-assignment">
-                        <h6 class="assignment-title">Assigned Property</h6>
-                        @if($tenant->tenantHouses->count() > 0)
-                            @php
-                                $house = $tenant->tenantHouses->first();
-                                $pivotStatus = $house->pivot->approval_status;
-                                $statusText = $pivotStatus === true ? 'Approved' : ($pivotStatus === false ? 'Rejected' : 'Pending');
-                                $statusColor = $pivotStatus === true ? 'success' : ($pivotStatus === false ? 'danger' : 'warning');
-                            @endphp
-                            <div class="property-preview">
-                                <div class="property-image-small">
-                                    <img src="{{ asset('storage/' . $house->house_image) }}" alt="Property" class="property-thumbnail">
-                                </div>
-                                <div class="property-details">
-                                    <p class="property-address">{{ $house->house_address }}</p>
-                                    <span class="assignment-status bg-{{ $statusColor }}-subtle text-{{ $statusColor }}">
-                                        <i class="fas fa-{{ $statusColor == 'success' ? 'check-circle' : ($statusColor == 'danger' ? 'times-circle' : 'clock') }} me-1"></i>
-                                        {{ $statusText }}
-                                    </span>
-                                </div>
-                            </div>
-                        @else
-                            <div class="no-assignment">
-                                <i class="fas fa-home text-muted"></i>
-                                <span class="text-muted">No property assigned</span>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="tenant-actions">
-                        <a href="{{ route('landlord.tenants.show', $tenant->userID) }}" 
-                           class="btn btn-tenant-action">
-                            <i class="fas fa-eye me-2"></i>View Details
+                        <h4 class="empty-state-title">No Tenants Yet</h4>
+                        <p class="empty-state-description">Start managing your tenants by adding your first tenant assignment.</p>
+                        <a href="{{ route('landlord.tenants.create') }}" class="btn btn-modern-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>Add Your First Tenant
                         </a>
-                        <div class="action-buttons">
-                            <a href="{{ route('landlord.tenants.edit', $tenant->userID) }}" 
-                               class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button type="button" class="btn btn-outline-danger btn-sm" 
-                                    onclick="confirmDelete({{ $tenant->userID }})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
                     </div>
                 </div>
-            </div>
-        @empty
-            <div class="empty-state">
-                <div class="empty-state-content">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h4 class="empty-state-title">No Tenants Yet</h4>
-                    <p class="empty-state-description">Start managing your tenants by adding your first tenant assignment.</p>
-                    <a href="{{ route('landlord.tenants.create') }}" class="btn btn-modern-primary btn-lg">
-                        <i class="fas fa-plus me-2"></i>Add Your First Tenant
-                    </a>
-                </div>
-            </div>
-        @endforelse
+            @endif
+        </div>
     </div>
 </div>
 
@@ -176,6 +224,7 @@
 </div>
 
 <style>
+/* Keep existing styles for page header, buttons, etc. */
 .page-header {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
     border-radius: 20px;
@@ -230,133 +279,82 @@
     color: white;
 }
 
-.tenants-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.tenant-card {
-    background: white;
-    border-radius: 20px;
+/* New styles for tenant list view */
+.tenant-list-card {
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.tenant-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.tenant-header {
+.header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.tenant-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    transform: translate(30px, -30px);
-}
-
-.tenant-avatar-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.tenant-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.avatar-initials {
     color: white;
-    font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 
-.status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border: 2px solid currentColor;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-}
-
-.tenant-content {
-    padding: 1.5rem;
-}
-
-.tenant-name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-color);
-    margin-bottom: 1rem;
-    line-height: 1.3;
-}
-
-.contact-details {
-    margin-bottom: 1.5rem;
-}
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-}
-
-.contact-item i {
-    color: var(--primary-color);
-    width: 16px;
-}
-
-.assignment-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    margin-bottom: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.property-preview {
-    display: flex;
-    align-items: center;
-    background: rgba(99, 102, 241, 0.05);
+.search-filter .input-group {
     border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.search-filter .form-control:focus {
+    box-shadow: none;
+}
+
+.tenant-table thead th {
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.tenant-row {
+    transition: all 0.3s ease;
+}
+
+.tenant-row:hover {
+    background-color: rgba(99, 102, 241, 0.03);
+}
+
+.tenant-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.tenant-id {
+    font-size: 0.75rem;
+}
+
+.contact-info {
+    font-size: 0.875rem;
 }
 
 .property-image-small {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 8px;
     overflow: hidden;
-    margin-right: 1rem;
 }
 
 .property-thumbnail {
@@ -365,83 +363,54 @@
     object-fit: cover;
 }
 
-.property-details {
-    flex: 1;
+.property-address {
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
-.property-address {
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
     font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
 }
 
 .assignment-status {
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.6rem;
     border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.no-assignment {
-    display: flex;
+    font-size: 0.7rem;
+    font-weight: 500;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    background: rgba(0, 0, 0, 0.02);
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-}
-
-.no-assignment i {
-    margin-right: 0.5rem;
-    font-size: 1.2rem;
-}
-
-.tenant-actions {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-}
-
-.btn-tenant-action {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    color: white;
-    border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
-    font-weight: 600;
-    flex: 1;
-    transition: all 0.3s ease;
-}
-
-.btn-tenant-action:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    color: white;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
 }
 
 .action-buttons .btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
+.action-buttons .btn:hover {
+    transform: translateY(-2px);
+}
+
+.no-property {
+    font-size: 0.875rem;
+}
+
+/* Empty state styles - keep existing */
 .empty-state {
-    grid-column: 1 / -1;
+    padding: 4rem 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 400px;
 }
 
 .empty-state-content {
@@ -491,12 +460,18 @@
     }
 }
 
-@media (max-width: 768px) {
-    .tenants-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+/* Responsive styles */
+@media (max-width: 992px) {
+    .search-filter {
+        margin-top: 1rem;
     }
     
+    .card-header {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
     .page-header {
         padding: 1.5rem;
     }
@@ -510,24 +485,49 @@
         margin-bottom: 0.5rem;
     }
     
-    .tenant-actions {
-        flex-direction: column;
-    }
-    
-    .action-buttons {
-        width: 100%;
-        justify-content: center;
+    .tenant-table {
+        min-width: 900px;
     }
 }
 </style>
 
 @push('scripts')
 <script>
+// Keep existing delete confirmation script
 function confirmDelete(tenantId) {
     const form = document.getElementById('deleteForm');
     form.action = `/tenants/${tenantId}`;
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
+
+// Add search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('tenantSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.tenant-row');
+            
+            rows.forEach(row => {
+                const tenantName = row.querySelector('.fw-semibold').textContent.toLowerCase();
+                const tenantEmail = row.querySelector('.contact-info span').textContent.toLowerCase();
+                const tenantPhone = row.querySelectorAll('.contact-info span')[1].textContent.toLowerCase();
+                
+                if (tenantName.includes(searchTerm) || tenantEmail.includes(searchTerm) || tenantPhone.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
 </script>
 @endpush
 @endsection
