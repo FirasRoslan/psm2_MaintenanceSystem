@@ -53,6 +53,7 @@ Route::middleware('role:landlord')->group(function () {
             // Rooms
             Route::get('/properties/{house}/rooms/create', [PropertyController::class, 'createRoom'])->name('properties.rooms.create');
             Route::post('/properties/{house}/rooms', [PropertyController::class, 'storeRoom'])->name('properties.rooms.store');
+            Route::get('/properties/rooms/{room}', [PropertyController::class, 'showRoom'])->name('properties.rooms.show');
             Route::delete('/properties/rooms/{room}', [PropertyController::class, 'deleteRoom'])->name('properties.rooms.delete');
         
             // Items
@@ -123,6 +124,7 @@ Route::middleware(['auth', 'role:landlord'])->prefix('landlord')->name('landlord
     // Rooms
     Route::get('/properties/{house}/rooms/create', [PropertyController::class, 'createRoom'])->name('properties.rooms.create');
     Route::post('/properties/{house}/rooms', [PropertyController::class, 'storeRoom'])->name('properties.rooms.store');
+    Route::get('/properties/rooms/{room}', [PropertyController::class, 'showRoom'])->name('properties.rooms.show');
     Route::delete('/properties/rooms/{room}', [PropertyController::class, 'deleteRoom'])->name('properties.rooms.delete');
 
     // Items

@@ -583,6 +583,54 @@
             height: 60px;
         }
     }
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-type-badge .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+}
+
+.notification-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 </style>
 @endpush
 @endsection
+
+<script>
+function markTasksAsViewed() {
+    // You can implement an AJAX call here to mark tasks as viewed
+    // For now, we'll just hide the notification
+    const taskNotification = document.querySelector('.bg-gradient-warning');
+    if (taskNotification) {
+        taskNotification.style.transition = 'opacity 0.3s ease';
+        taskNotification.style.opacity = '0';
+        setTimeout(() => {
+            taskNotification.style.display = 'none';
+        }, 300);
+    }
+}
+</script>

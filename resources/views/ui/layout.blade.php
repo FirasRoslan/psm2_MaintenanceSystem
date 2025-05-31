@@ -418,12 +418,10 @@
     </style>
     @stack('styles')
 </head>
-@php
-    $isAuthPage = request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*') || 
-                  request()->is('login') || request()->is('register') || request()->is('password/*');
-@endphp
-
-<body class="@if($isAuthPage) auth-body @endif">
+<body class="@if(request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*')) auth-body @endif">
+    @php
+        $isAuthPage = request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*');
+    @endphp
     
     @if(auth()->check() && !$isAuthPage)
     <div class="d-flex">

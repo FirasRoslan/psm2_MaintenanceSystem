@@ -296,7 +296,6 @@ class PropertyController extends Controller
             abort(403, 'Unauthorized action.');
         }
     
-        // Update the pivot table with the correct approval status
         // Convert the string status to the appropriate boolean value
         $approvalStatus = null;
         if ($validated['assignment_status'] === 'approve') {
@@ -305,10 +304,9 @@ class PropertyController extends Controller
             $approvalStatus = false;
         } // 'pending' remains null
     
-        // Update the pivot table
-        $tenant->tenantHouses()->syncWithoutDetaching([
-            $validated['house_id'] => ['approval_status' => $approvalStatus]
-        ]);
+        // First detach the existing relationship, then attach with new status
+        $tenant->tenantHouses()->detach($validated['house_id']);
+        $tenant->tenantHouses()->attach($validated['house_id'], ['approval_status' => $approvalStatus]);
     
         return redirect()->route('landlord.tenants.index')
             ->with('success', 'Tenant house assignment has been updated successfully');
@@ -387,5 +385,18 @@ class PropertyController extends Controller
         
         return redirect()->route('landlord.tenants.index')
                         ->with('success', 'Tenant added successfully. Default password is "password123".');
+    }
+    
+    public function showRoom(Room $room)
+    {
+        // Check if the room belongs to the logged-in landlord
+        if (!$this->checkOwnership($room, 'room')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Load the room with its items and house information
+        $room->load(['items', 'house']);
+        
+        return view('landlord.properties.rooms.show', compact('room'));
     }
 }

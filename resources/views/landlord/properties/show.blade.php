@@ -124,6 +124,10 @@
                                          alt="{{ $room->room_type }}">
                                     <div class="room-overlay">
                                         <div class="room-actions">
+                                            <a href="{{ route('landlord.properties.rooms.show', $room->roomID) }}" 
+                                               class="btn btn-sm btn-primary me-2">
+                                                <i class="fas fa-eye me-1"></i>View Details
+                                            </a>
                                             <a href="{{ route('landlord.properties.rooms.items.create', $room->roomID) }}" 
                                                class="btn btn-sm btn-light">
                                                 <i class="fas fa-plus me-1"></i>Add Item

@@ -27,7 +27,33 @@ class ContractorViewController extends Controller
             ->wherePivot('updated_at', '>=', now()->subDays(7))
             ->get();
         
-        return view('contractor.dashboard', compact('approvedLandlords', 'pendingRequests', 'recentlyApprovedLandlords'));
+        // Get new tasks assigned to this contractor (within the last 7 days)
+        $newTasks = $user->tasks()
+            ->with(['report.item', 'report.room.house', 'report.user'])
+            ->where('created_at', '>=', now()->subDays(7))
+            ->where('task_status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Get all pending tasks for quick overview
+        $pendingTasks = $user->tasks()
+            ->with(['report.item', 'report.room.house', 'report.user'])
+            ->where('task_status', 'pending')
+            ->count();
+        
+        // Get in-progress tasks
+        $inProgressTasks = $user->tasks()
+            ->where('task_status', 'in_progress')
+            ->count();
+        
+        return view('contractor.dashboard', compact(
+            'approvedLandlords', 
+            'pendingRequests', 
+            'recentlyApprovedLandlords',
+            'newTasks',
+            'pendingTasks',
+            'inProgressTasks'
+        ));
     }
     
     public function findLandlords()
@@ -57,7 +83,8 @@ class ContractorViewController extends Controller
         $validated = $request->validate([
             'landlordID' => 'required|exists:users,userID',
             'maintenance_scope' => 'required|string',
-            'specialization' => 'required|string',
+            'specializations' => 'required|array|min:1',
+            'specializations.*' => 'required|string|in:Plumbing,Electrical,Carpentry,HVAC,General Maintenance,Painting,Roofing,Landscaping',
         ]);
         
         $user = Auth::user();
@@ -76,12 +103,13 @@ class ContractorViewController extends Controller
         $contractorLandlord->contractorID = $user->userID;
         $contractorLandlord->landlordID = $validated['landlordID'];
         $contractorLandlord->maintenance_scope = $validated['maintenance_scope'];
-        $contractorLandlord->specialization = $validated['specialization'];
+        // Convert array to comma-separated string
+        $contractorLandlord->specialization = implode(', ', $validated['specializations']);
         $contractorLandlord->approval_status = null; // Pending approval
         $contractorLandlord->save();
         
-        return redirect()->route('contractor.dashboard')
-            ->with('success', 'Your request has been submitted and is pending approval from the landlord.');
+        return redirect()->route('contractor.find-landlords')
+            ->with('success', 'Your request has been submitted successfully and is pending approval from the landlord.');
     }
     
     public function viewApprovedLandlords()
@@ -165,5 +193,26 @@ class ContractorViewController extends Controller
     public function viewLandlordProfile($id)
     {
         return $this->showLandlordProfile($id);
+    }
+    
+    /**
+     * View all requests sent by the contractor
+     */
+    public function viewRequests()
+    {
+        $user = Auth::user();
+        
+        // Get all requests (pending, approved, and rejected)
+        $allRequests = ContractorLandlord::where('contractorID', $user->userID)
+            ->with('landlord')
+            ->latest()
+            ->get();
+        
+        // Separate requests by status
+        $pendingRequests = $allRequests->whereNull('approval_status');
+        $approvedRequests = $allRequests->where('approval_status', 1);
+        $rejectedRequests = $allRequests->where('approval_status', 0);
+        
+        return view('contractor.requests', compact('allRequests', 'pendingRequests', 'approvedRequests', 'rejectedRequests'));
     }
 }

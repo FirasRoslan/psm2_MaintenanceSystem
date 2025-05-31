@@ -52,6 +52,9 @@ class TenantController extends Controller
             'report_status' => 'Pending'
         ]);
         
+        // Optional: Store notification flag in session for landlord
+        session()->flash('new_maintenance_report', true);
+        
         return back()->with('success', 'Report submitted successfully');
     }
     

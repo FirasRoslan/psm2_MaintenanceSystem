@@ -74,6 +74,23 @@
             </div>
         </div>
         @endif
+        
+        @if($pendingMaintenanceCount > 0)
+        <div class="notification-card maintenance-notification mt-3">
+            <div class="notification-content">
+                <div class="notification-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="notification-text">
+                    <h6 class="notification-title">New Maintenance Reports</h6>
+                    <p class="notification-desc">{{ $pendingMaintenanceCount }} maintenance {{ Str::plural('report', $pendingMaintenanceCount) }} submitted by tenants awaiting your attention.</p>
+                    <a href="{{ route('landlord.requests.index') }}" class="btn btn-notification">
+                        <i class="fas fa-tools me-1"></i> View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 
     <!-- Enhanced Stats Cards -->
@@ -509,25 +526,29 @@
 
 /* Notification Cards */
 .notification-card {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border-left: 4px solid;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
     transition: all 0.3s ease;
 }
 
 .notification-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
 }
 
 .tenant-notification {
-    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .contractor-notification {
-    border-left-color: #3b82f6;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.maintenance-notification {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 .notification-content {
@@ -536,51 +557,59 @@
 }
 
 .notification-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1rem;
-    font-size: 1.5rem;
+    margin-right: 20px;
+    font-size: 24px;
 }
 
 .tenant-notification .notification-icon {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .contractor-notification .notification-icon {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.maintenance-notification .notification-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.maintenance-notification .notification-icon {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .notification-title {
+    font-size: 18px;
     font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.25rem;
+    margin-bottom: 8px;
 }
 
 .notification-desc {
-    color: #6b7280;
-    margin-bottom: 1rem;
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 15px;
 }
 
 .btn-notification {
-    background: rgba(99, 102, 241, 0.1);
-    color: #6366f1;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
     transition: all 0.3s ease;
 }
 
 .btn-notification:hover {
-    background: #6366f1;
+    background: rgba(255, 255, 255, 0.3);
     color: white;
-    border-color: #6366f1;
+    transform: translateY(-2px);
 }
 
 /* Stats Section */
