@@ -3,157 +3,422 @@
 @section('title', 'Login')
 
 @section('content')
-<!-- Top Navigation Bar -->
-<nav class="navbar navbar-expand-lg position-fixed w-100" style="top: 0; z-index: 1000; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" style="color: #0d6efd; font-weight: 600; font-size: 1.5rem; text-decoration: none;">
-            <i class="fas fa-home me-2" style="color: #0d6efd; font-size: 1.8rem;"></i>
-            Parit Raja Rental
-        </a>
-    </div>
-</nav>
+<style>
+:root {
+    --primary-blue: #3b82f6;
+    --light-blue: #dbeafe;
+    --dark-blue: #1e40af;
+    --accent-gold: #f59e0b;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+}
 
-<div class="container-fluid vh-100 d-flex align-items-center justify-content-center p-0" style="padding-top: 80px !important;">
-    <div class="row w-100 h-100 g-0">
-        <!-- Left Side - Branding -->
-        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center position-relative overflow-hidden">
-            <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%); z-index: 1;"></div>
-            <div class="position-absolute w-100 h-100" style="background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>'); opacity: 0.3;"></div>
-            
-            <div class="text-center text-white position-relative" style="z-index: 2;">
-                <!-- Main Logo above Welcome Back -->
-                <div class="mb-4">
-                    <img src="{{ asset('image/logo.png') }}" alt="Parit Raja Rental House" class="img-fluid mb-3" style="width: 120px; height: auto; filter: brightness(0) invert(1);">
-                    <!-- Brand Name with Icon -->
-                    <div class="d-flex align-items-center justify-content-center mb-4">
-                        <i class="fas fa-home me-2" style="font-size: 2rem; opacity: 0.9;"></i>
-                        <h3 class="mb-0 fw-bold" style="font-size: 1.8rem;">Parit Raja Rental</h3>
-                    </div>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+    min-height: 100vh;
+}
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    width: 100%;
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 600px;
+}
+
+.auth-brand {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-brand::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+    opacity: 0.3;
+}
+
+.brand-content {
+    position: relative;
+    z-index: 2;
+}
+
+.brand-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.brand-logo i {
+    font-size: 2.5rem;
+    color: var(--white);
+}
+
+.brand-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.feature-item {
+    text-align: left;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.feature-icon i {
+    font-size: 1.2rem;
+    color: var(--white);
+}
+
+.feature-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.feature-desc {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+.auth-form {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--gray-100);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: var(--white);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-light);
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--primary-blue);
+}
+
+.forgot-link {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.form-footer {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.form-footer a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+.alert {
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.alert-danger {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+@media (max-width: 768px) {
+    .auth-card {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+    }
+    
+    .auth-brand {
+        padding: 2rem;
+        min-height: auto;
+    }
+    
+    .auth-form {
+        padding: 2rem;
+    }
+    
+    .feature-grid {
+        display: none;
+    }
+}
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <!-- Brand Side -->
+        <div class="auth-brand">
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <i class="fas fa-home"></i>
                 </div>
-                <h1 class="display-4 fw-bold mb-3">Welcome Back</h1>
-                <p class="lead mb-4 opacity-90">Manage your properties with ease and efficiency</p>
-                <div class="row text-center mt-5">
-                    <div class="col-4">
-                        <div class="p-3">
-                            <i class="fas fa-building fa-2x mb-2 opacity-75"></i>
-                            <h6 class="fw-semibold">Properties</h6>
-                            <small class="opacity-75">Manage all your rental properties</small>
+                <h1 class="brand-title">Parit Raja Rental</h1>
+                <p class="brand-subtitle">Welcome back! Sign in to manage your properties and connect with tenants.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-building"></i>
                         </div>
+                        <div class="feature-title">Property Management</div>
+                        <div class="feature-desc">Manage all your rental properties in one place</div>
                     </div>
-                    <div class="col-4">
-                        <div class="p-3">
-                            <i class="fas fa-users fa-2x mb-2 opacity-75"></i>
-                            <h6 class="fw-semibold">Tenants</h6>
-                            <small class="opacity-75">Track tenant information</small>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
                         </div>
+                        <div class="feature-title">Tenant Connect</div>
+                        <div class="feature-desc">Connect with tenants and handle requests easily</div>
                     </div>
-                    <div class="col-4">
-                        <div class="p-3">
-                            <i class="fas fa-chart-line fa-2x mb-2 opacity-75"></i>
-                            <h6 class="fw-semibold">Analytics</h6>
-                            <small class="opacity-75">Monitor your performance</small>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
                         </div>
+                        <div class="feature-title">Analytics</div>
+                        <div class="feature-desc">Track your rental income and property performance</div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Right Side - Login Form -->
-        <div class="col-lg-6 d-flex align-items-center justify-content-center bg-white">
-            <div class="w-100" style="max-width: 420px; padding: 2rem;">
-                <div class="text-center mb-5">
-                    <div class="d-lg-none mb-4">
-                        <img src="{{ asset('image/logo.png') }}" alt="Parit Raja Rental House" class="img-fluid" style="width: 80px; height: auto;">
-                    </div>
-                    <h2 class="fw-bold text-dark mb-2">Sign In</h2>
-                    <p class="text-muted">Enter your credentials to access your account</p>
+        <!-- Form Side -->
+        <div class="auth-form">
+            <div class="form-header">
+                <h2 class="form-title">Sign In</h2>
+                <p class="form-subtitle">Enter your credentials to access your account</p>
+            </div>
+            
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
                 </div>
-
-                @if ($errors->any())
-                    <div class="alert alert-danger border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>
-                            <div>
-                                @foreach ($errors->all() as $error)
-                                    <div class="small">{{ $error }}</div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
-                    @csrf
-                    
-                    <div class="mb-4">
-                        <label for="email" class="form-label text-dark fw-semibold">
-                            <i class="fas fa-envelope me-2 text-muted"></i>Email Address
-                        </label>
-                        <input type="email" 
-                               class="form-control form-control-lg @error('email') is-invalid @enderror" 
-                               id="email" 
-                               name="email" 
-                               value="{{ old('email') }}" 
-                               required 
-                               autofocus
-                               placeholder="Enter your email address"
-                               style="border: 2px solid #e5e7eb; padding: 0.875rem 1rem; font-size: 1rem;">
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="password" class="form-label text-dark fw-semibold">
-                            <i class="fas fa-lock me-2 text-muted"></i>Password
-                        </label>
-                        <div class="position-relative">
-                            <input type="password" 
-                                   class="form-control form-control-lg @error('password') is-invalid @enderror" 
-                                   id="password" 
-                                   name="password" 
-                                   required
-                                   placeholder="Enter your password"
-                                   style="border: 2px solid #e5e7eb; padding: 0.875rem 1rem; font-size: 1rem; padding-right: 3rem;">
-                            <button type="button" 
-                                    class="btn position-absolute top-50 end-0 translate-middle-y me-2 p-0" 
-                                    style="background: none; border: none; color: #6b7280; width: 2rem; height: 2rem;"
-                                    onclick="togglePassword()">
-                                <i class="fas fa-eye" id="toggleIcon"></i>
-                            </button>
-                        </div>
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <label class="form-check-label text-muted" for="remember">
-                                Remember me for 30 days
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="d-grid mb-4">
-                        <button type="submit" class="btn btn-primary btn-lg fw-semibold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 0.875rem; font-size: 1.1rem;">
-                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+            @endif
+            
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        <i class="fas fa-envelope me-1"></i> Email Address
+                    </label>
+                    <input type="email" id="email" name="email" class="form-input" 
+                           placeholder="Enter your email address" 
+                           value="{{ old('email') }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock me-1"></i> Password
+                    </label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" class="form-input" 
+                               placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="password-icon"></i>
                         </button>
                     </div>
-
-                    <div class="text-center">
-                        <a href="{{ route('password.request') }}" class="text-decoration-none" style="color: #667eea; font-weight: 500;">
-                            <i class="fas fa-key me-1"></i>Forgot your password?
-                        </a>
-                    </div>
-                </form>
-
-                <div class="text-center mt-4 pt-4 border-top">
-                    <p class="text-muted mb-0">Don't have an account? 
-                        <a href="{{ route('register') }}" class="text-decoration-none fw-semibold" style="color: #667eea;">Create account</a>
-                    </p>
                 </div>
+                
+                <div class="form-options">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me for 30 days</label>
+                    </div>
+                    <a href="#" class="forgot-link">Forgot your password?</a>
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt me-2"></i> Sign In
+                </button>
+            </form>
+            
+            <div class="form-footer">
+                Don't have an account? <a href="{{ route('register') }}">Create one here</a>
             </div>
         </div>
     </div>
@@ -162,73 +427,15 @@
 <script>
 function togglePassword() {
     const passwordInput = document.getElementById('password');
-    const toggleIcon = document.getElementById('toggleIcon');
+    const passwordIcon = document.getElementById('password-icon');
     
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
+        passwordIcon.className = 'fas fa-eye-slash';
     } else {
         passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
+        passwordIcon.className = 'fas fa-eye';
     }
 }
-
-// Form validation
-(function() {
-    'use strict';
-    window.addEventListener('load', function() {
-        var forms = document.getElementsByClassName('needs-validation');
-        var validation = Array.prototype.filter.call(forms, function(form) {
-            form.addEventListener('submit', function(event) {
-                if (form.checkValidity() === false) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    }, false);
-})();
-
-// Enhanced input focus effects
-document.addEventListener('DOMContentLoaded', function() {
-    const inputs = document.querySelectorAll('.form-control');
-    
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.style.borderColor = '#667eea';
-            this.style.boxShadow = '0 0 0 0.2rem rgba(102, 126, 234, 0.25)';
-        });
-        
-        input.addEventListener('blur', function() {
-            this.style.borderColor = '#e5e7eb';
-            this.style.boxShadow = 'none';
-        });
-    });
-});
 </script>
-
-<style>
-.navbar-brand:hover {
-    color: #0a58ca !important;
-    transform: translateY(-1px);
-    transition: all 0.3s ease;
-}
-
-.navbar-brand i {
-    transition: all 0.3s ease;
-}
-
-.navbar-brand:hover i {
-    transform: scale(1.1);
-}
-
-@media (max-width: 991px) {
-    .container-fluid {
-        padding-top: 100px !important;
-    }
-}
-</style>
 @endsection

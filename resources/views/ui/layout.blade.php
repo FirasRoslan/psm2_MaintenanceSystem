@@ -198,20 +198,20 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
-        
+
+        .sidebar-brand img {
+            max-width: 100%;
+            height: auto;
+            filter: brightness(0) invert(1);
+            transition: all 0.3s ease;
+        }
+
         #sidebar.collapsed .sidebar-brand {
             padding: 1rem 0.5rem;
         }
-        
+
         #sidebar.collapsed .sidebar-brand img {
-            width: 40px !important;
-            height: 40px !important;
-        }
-        
-        .sidebar-brand img {
-            filter: brightness(0) invert(1);
-            opacity: 0.9;
-            transition: all 0.3s ease;
+            width: 40px;
         }
 
         .sidebar-link {
@@ -224,58 +224,68 @@
             border-radius: 0;
             margin: 0.25rem 1rem;
             border-radius: 12px;
-            font-weight: 500;
+            position: relative;
+            overflow: hidden;
         }
 
         .sidebar-link:hover {
-            background: rgba(255, 255, 255, 0.1);
             color: white;
+            background: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
         }
 
         .sidebar-link.active {
-            background: rgba(255, 255, 255, 0.2);
             color: white;
-            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-link i {
-            margin-right: 1rem;
             width: 20px;
+            margin-right: 1rem;
             text-align: center;
             transition: all 0.3s ease;
         }
 
+        .sidebar-link span {
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
         #sidebar.collapsed .sidebar-link {
-            padding: 1rem 0.5rem;
+            padding: 1rem 0.75rem;
             justify-content: center;
             margin: 0.25rem 0.5rem;
         }
 
-        #sidebar.collapsed .sidebar-link span {
-            display: none;
-        }
-
         #sidebar.collapsed .sidebar-link i {
             margin-right: 0;
-            font-size: 1.2rem;
         }
 
+        #sidebar.collapsed .sidebar-link span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Card Styles */
         .card {
-            border-radius: 16px;
             border: none;
-            box-shadow: var(--shadow-md);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
             transition: all 0.3s ease;
+            background: white;
         }
 
         .card:hover {
+            box-shadow: var(--shadow-md);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
         }
 
         .card-header {
-            border-bottom: 1px solid var(--border-color);
-            background: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-bottom: none;
             border-radius: 16px 16px 0 0 !important;
             padding: 1.5rem;
         }
@@ -284,70 +294,104 @@
             padding: 1.5rem;
         }
 
+        /* Button Styles */
+        .btn {
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+        }
+
+        /* Form Styles */
         .form-control {
             border-radius: 12px;
             border: 2px solid var(--border-color);
-            padding: 0.75rem 1rem;
+            padding: 0.875rem 1rem;
             transition: all 0.3s ease;
-            font-size: 1rem;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.1);
         }
 
         .form-label {
             font-weight: 600;
             color: var(--text-color);
             margin-bottom: 0.5rem;
-            font-size: 0.95rem;
         }
 
-        .btn {
-            border-radius: 12px;
-            font-weight: 500;
-            padding: 0.625rem 1.25rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            border: none;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 1rem 1.25rem;
-        }
-
+        /* Table Styles */
         .table {
             border-radius: 12px;
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
 
+        .table thead th {
+            background: var(--bg-light);
+            border: none;
+            font-weight: 600;
+            color: var(--text-color);
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            border: none;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* Badge Styles */
         .badge {
-            font-weight: 500;
-            padding: 0.5rem 0.75rem;
             border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
         }
 
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .top-header {
-                left: 0;
-            }
-            
             #sidebar {
                 margin-left: -280px;
+                transition: margin-left 0.3s ease;
             }
             #sidebar.mobile-active {
                 margin-left: 0;
+            }
+            .top-header {
+                left: 0;
             }
             #content {
                 width: 100%;
@@ -374,8 +418,14 @@
     </style>
     @stack('styles')
 </head>
-<body class="@if(request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*')) auth-body @endif">
-    @if(auth()->check())
+@php
+    $isAuthPage = request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*') || 
+                  request()->is('login') || request()->is('register') || request()->is('password/*');
+@endphp
+
+<body class="@if($isAuthPage) auth-body @endif">
+    
+    @if(auth()->check() && !$isAuthPage)
     <div class="d-flex">
         <!-- Sidebar -->
         <div id="sidebar" class="bg-gradient-primary">

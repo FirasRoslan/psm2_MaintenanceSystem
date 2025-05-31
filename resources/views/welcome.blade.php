@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Parit Raja Rental House</title>
+    <title>Parit Raja Rental House - UTHM Students</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -15,12 +15,19 @@
     
     <style>
         :root {
-            --primary-blue: #2563eb;
-            --primary-blue-light: #3b82f6;
-            --primary-blue-dark: #1d4ed8;
-            --blue-50: #eff6ff;
-            --blue-100: #dbeafe;
-            --blue-200: #bfdbfe;
+            --primary-sky: #0ea5e9;
+            --primary-sky-light: #38bdf8;
+            --primary-sky-dark: #0284c7;
+            --sky-50: #f0f9ff;
+            --sky-100: #e0f2fe;
+            --sky-200: #bae6fd;
+            --sky-300: #7dd3fc;
+            --sky-400: #38bdf8;
+            --sky-500: #0ea5e9;
+            --sky-600: #0284c7;
+            --sky-700: #0369a1;
+            --sky-800: #075985;
+            --sky-900: #0c4a6e;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -29,6 +36,8 @@
             --gray-800: #1f2937;
             --gray-900: #111827;
             --white: #ffffff;
+            --uthm-gold: #fbbf24;
+            --uthm-gold-light: #fcd34d;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -52,19 +61,20 @@
         .navbar {
             padding: 1rem 0;
             background-color: var(--white);
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--sky-200);
             backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
         }
         
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            color: var(--primary-blue);
+            color: var(--primary-sky);
             text-decoration: none;
         }
         
         .navbar-brand:hover {
-            color: var(--primary-blue-dark);
+            color: var(--primary-sky-dark);
         }
         
         .nav-link {
@@ -76,7 +86,7 @@
         }
         
         .nav-link:hover {
-            color: var(--primary-blue);
+            color: var(--primary-sky);
         }
         
         .btn {
@@ -92,13 +102,13 @@
         }
         
         .btn-primary {
-            background-color: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-sky), var(--primary-sky-light));
             color: var(--white);
             box-shadow: var(--shadow-sm);
         }
         
         .btn-primary:hover {
-            background-color: var(--primary-blue-dark);
+            background: linear-gradient(135deg, var(--primary-sky-dark), var(--primary-sky));
             box-shadow: var(--shadow-md);
             transform: translateY(-1px);
             color: var(--white);
@@ -106,22 +116,40 @@
         
         .btn-outline {
             background-color: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
+            color: var(--primary-sky);
+            border: 2px solid var(--primary-sky);
         }
         
         .btn-outline:hover {
-            background-color: var(--primary-blue);
+            background-color: var(--primary-sky);
             color: var(--white);
         }
         
         /* Hero Section */
         .hero-section {
             padding: 5rem 0;
-            background: linear-gradient(135deg, var(--blue-50) 0%, var(--white) 100%);
+            background: linear-gradient(135deg, var(--sky-50) 0%, var(--white) 50%, var(--sky-100) 100%);
             min-height: 90vh;
             display: flex;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23e0f2fe" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.5;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
         
         .hero-content h1 {
@@ -141,12 +169,93 @@
         
         .hero-image {
             position: relative;
+            z-index: 2;
         }
         
         .hero-image img {
             width: 100%;
             border-radius: 1.5rem;
             box-shadow: var(--shadow-xl);
+        }
+        
+        /* UTHM Welcome Section */
+        .uthm-welcome-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary-sky), var(--sky-600));
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .uthm-welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 40%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(15deg);
+            border-radius: 50%;
+        }
+        
+        .uthm-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .uthm-logo {
+            width: 80px;
+            height: 80px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .uthm-logo i {
+            font-size: 2rem;
+            color: var(--primary-sky);
+        }
+        
+        .uthm-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .uthm-content p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .uthm-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--uthm-gold);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
         
         /* Feature Cards */
@@ -179,7 +288,7 @@
             padding: 2rem;
             border-radius: 1.5rem;
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--sky-200);
             transition: all 0.3s ease;
             height: 100%;
             text-align: center;
@@ -188,13 +297,13 @@
         .feature-card:hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow-xl);
-            border-color: var(--blue-200);
+            border-color: var(--sky-300);
         }
         
         .feature-icon {
             width: 4rem;
             height: 4rem;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            background: linear-gradient(135deg, var(--primary-sky), var(--primary-sky-light));
             border-radius: 1rem;
             display: flex;
             align-items: center;
@@ -222,7 +331,7 @@
         /* Roles Section */
         .roles-section {
             padding: 5rem 0;
-            background-color: var(--gray-50);
+            background: linear-gradient(135deg, var(--sky-50), var(--gray-50));
         }
         
         .role-card {
@@ -232,11 +341,13 @@
             box-shadow: var(--shadow-md);
             transition: all 0.3s ease;
             height: 100%;
+            border: 1px solid var(--sky-200);
         }
         
         .role-card:hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow-xl);
+            border-color: var(--sky-300);
         }
         
         .role-image {
@@ -273,22 +384,41 @@
         }
         
         .role-link {
-            color: var(--primary-blue);
+            color: var(--primary-sky);
             font-weight: 500;
             text-decoration: none;
             transition: all 0.2s ease;
         }
         
         .role-link:hover {
-            color: var(--primary-blue-dark);
+            color: var(--primary-sky-dark);
         }
         
         /* CTA Section */
         .cta-section {
             padding: 5rem 0;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            background: linear-gradient(135deg, var(--primary-sky), var(--sky-600));
             text-align: center;
             color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -20%;
+            width: 40%;
+            height: 160%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(-15deg);
+            border-radius: 50%;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 2;
         }
         
         .cta-content h2 {
@@ -308,13 +438,14 @@
         
         .btn-white {
             background-color: var(--white);
-            color: var(--primary-blue);
+            color: var(--primary-sky);
             font-weight: 600;
         }
         
         .btn-white:hover {
-            background-color: var(--gray-100);
-            color: var(--primary-blue-dark);
+            background-color: var(--sky-50);
+            color: var(--primary-sky-dark);
+            transform: translateY(-2px);
         }
         
         /* Footer */
@@ -354,7 +485,7 @@
         }
         
         .footer-links a:hover {
-            color: var(--primary-blue-light);
+            color: var(--sky-400);
         }
         
         .social-icons {
@@ -377,7 +508,7 @@
         }
         
         .social-icons a:hover {
-            background-color: var(--primary-blue);
+            background-color: var(--primary-sky);
             color: var(--white);
         }
         
@@ -407,6 +538,15 @@
             .cta-content h2 {
                 font-size: 2rem;
             }
+            
+            .uthm-content h2 {
+                font-size: 2rem;
+            }
+            
+            .uthm-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -428,6 +568,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#roles">Roles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#uthm">UTHM Students</a>
                     </li>
                 </ul>
                 <div class="ms-lg-3 mt-3 mt-lg-0 d-flex gap-2">
@@ -459,6 +602,34 @@
                 </div>
                 <div class="col-lg-6 hero-image">
                     <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" alt="Property Management" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- UTHM Welcome Section -->
+    <section class="uthm-welcome-section" id="uthm">
+        <div class="container">
+            <div class="uthm-content">
+                <div class="uthm-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h2>Welcome UTHM Students!</h2>
+                <p>Specially designed for Universiti Tun Hussein Onn Malaysia students living in Parit Raja. We understand your unique needs as students and provide the best rental house management experience tailored just for you.</p>
+                
+                <div class="uthm-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">UTHM Students</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Houses Available</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Support</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -541,7 +712,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="role-card">
                         <div class="role-image">
-                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Landlord" class="img-fluid">
+                            <img src="https://plus.unsplash.com/premium_photo-1664475082823-45a186f569b1?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Landlord" class="img-fluid">
                         </div>
                         <div class="role-content">
                             <h3>Landlords</h3>
@@ -553,7 +724,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="role-card">
                         <div class="role-image">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tenant" class="img-fluid">
+                            <img src="https://images.unsplash.com/photo-1652946619064-a12aec2d8456?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Tenant" class="img-fluid">
                         </div>
                         <div class="role-content">
                             <h3>Tenants</h3>
@@ -565,7 +736,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="role-card">
                         <div class="role-image">
-                            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Contractor" class="img-fluid">
+                            <img src="https://plus.unsplash.com/premium_photo-1664299069577-11579b487e6c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Contractor" class="img-fluid">
                         </div>
                         <div class="role-content">
                             <h3>Contractors</h3>
@@ -597,7 +768,7 @@
                     <div class="footer-logo">
                         <i class="fas fa-home me-2"></i> Parit Raja Rental
                     </div>
-                    <p>Simplifying property management for landlords and providing a better experience for tenants.</p>
+                    <p>Simplifying property management for landlords and providing a better experience for tenants, especially UTHM students.</p>
                     <div class="social-icons">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
