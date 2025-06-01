@@ -128,26 +128,113 @@ class ContractorViewController extends Controller
         return view('contractor.tasks', compact('tasks'));
     }
     
-    public function updateTaskStatus(Request $request, Task $task)
+    /**
+     * Update phase status for a task
+     */
+    public function updatePhaseStatus(Request $request, $phaseId)
     {
-        // Validate the request
-        $request->validate([
-            'status' => 'required|in:pending,in_progress,completed',
+        $validated = $request->validate([
+            'phase_status' => 'required|in:pending,in_progress,completed',
+            'phase_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
         
-        // Check if the task belongs to this contractor
-        $user = Auth::user();
-        if ($task->userID != $user->userID) {
-            return back()->with('error', 'You do not have permission to update this task.');
+        $phase = Phase::findOrFail($phaseId);
+        $task = $phase->task;
+        
+        // Ensure the contractor owns this task
+        if ($task->userID !== Auth::id()) {
+            abort(403, 'Unauthorized access to this phase.');
         }
         
-        // Update the task status
-        $task->task_status = $request->status;
+        // Handle image upload if provided
+        if ($request->hasFile('phase_image')) {
+            $imagePath = $request->file('phase_image')->store('phases', 'public');
+            $phase->phase_image = $imagePath;
+        }
         
-        // If task is completed, set the completed_at timestamp
-        if ($request->status == 'completed') {
+        // Update phase status and timestamps
+        $phase->phase_status = $validated['phase_status'];
+        
+        if ($validated['phase_status'] === 'in_progress' && !$phase->start_timestamp) {
+            $phase->start_timestamp = now();
+        } elseif ($validated['phase_status'] === 'completed') {
+            $phase->end_timestamp = now();
+        }
+        
+        $phase->save();
+        
+        // Update task status based on phase progress
+        $this->updateTaskStatusBasedOnPhases($task);
+        
+        return back()->with('success', 'Phase status updated successfully.');
+    }
+    
+    /**
+     * Create phases for a task when contractor accepts it
+     */
+    public function createTaskPhases(Task $task, $phaseCount = 3)
+    {
+        // Create default phases if none exist
+        if ($task->phases()->count() === 0) {
+            for ($i = 1; $i <= $phaseCount; $i++) {
+                Phase::create([
+                    'taskID' => $task->taskID,
+                    'arrangement_number' => $i,
+                    'phase_status' => 'pending'
+                ]);
+            }
+        }
+    }
+    
+    /**
+     * Update task status based on phase completion
+     */
+    private function updateTaskStatusBasedOnPhases(Task $task)
+    {
+        $phases = $task->phases;
+        $totalPhases = $phases->count();
+        $completedPhases = $phases->where('phase_status', 'completed')->count();
+        $inProgressPhases = $phases->where('phase_status', 'in_progress')->count();
+        
+        if ($completedPhases === $totalPhases && $totalPhases > 0) {
+            $task->task_status = 'completed';
             $task->completed_at = now();
-            
+            $task->report->report_status = 'Completed';
+            $task->report->save();
+        } elseif ($inProgressPhases > 0 || $completedPhases > 0) {
+            $task->task_status = 'in_progress';
+        }
+        
+        $task->save();
+    }
+    
+    /**
+     * Enhanced updateTaskStatus method
+     */
+    public function updateTaskStatus(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'task_status' => 'required|in:pending,in_progress,completed',
+            'task_notes' => 'nullable|string|max:1000'
+        ]);
+        
+        // Ensure the contractor owns this task
+        if ($task->userID !== Auth::id()) {
+            abort(403, 'Unauthorized access to this task.');
+        }
+        
+        // Create phases when task is started
+        if ($validated['task_status'] === 'in_progress' && $task->task_status === 'pending') {
+            $this->createTaskPhases($task);
+        }
+        
+        $task->task_status = $validated['task_status'];
+        $task->task_notes = $validated['task_notes'];
+        
+        if ($validated['task_status'] === 'completed') {
+            $task->completed_at = now();
+            // Mark all phases as completed
+            $task->phases()->update(['phase_status' => 'completed', 'end_timestamp' => now()]);
             // Also update the report status
             $task->report->report_status = 'Completed';
             $task->report->save();
