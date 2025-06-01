@@ -64,7 +64,7 @@
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="sidebar-link mb-2">
+            <a href="{{ route('contractor.tasks') }}" class="sidebar-link mb-2 {{ request()->routeIs('contractor.tasks') ? 'active' : '' }}">
                 <i class="fas fa-tasks"></i>
                 <span>Tasks</span>
             </a>

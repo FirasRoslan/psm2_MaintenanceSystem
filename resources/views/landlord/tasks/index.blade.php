@@ -125,225 +125,239 @@
     </div>
 </div>
 
-@push('styles')
 <style>
-    /* Page Header Styling */
+/* Enhanced Page Header Styles */
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+    opacity: 0.3;
+}
+
+.page-header * {
+    position: relative;
+    z-index: 1;
+}
+
+.page-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.page-description {
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.breadcrumb {
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: white;
+}
+
+/* Enhanced Filter Tabs */
+.filter-tabs-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.filter-tabs-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.filter-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.filter-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.filter-subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.filter-tabs-body {
+    padding: 0;
+}
+
+.nav-pills {
+    background: none;
+    padding: 0;
+}
+
+.nav-pills .nav-item {
+    flex: 1;
+}
+
+.nav-pills .nav-link {
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 1.5rem 1rem;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    border-right: 1px solid #e2e8f0;
+}
+
+.nav-pills .nav-item:last-child .nav-link {
+    border-right: none;
+}
+
+.nav-pills .nav-link:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+}
+
+.nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.nav-pills .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #f8fafc;
+}
+
+.tab-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-icon {
+    font-size: 1.2rem;
+}
+
+.tab-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.tab-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: inherit;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+}
+
+.nav-pills .nav-link:not(.active) .tab-badge {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+.nav-pills .nav-link:not(.active) .tab-badge.pending {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.nav-pills .nav-link:not(.active) .tab-badge.progress {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.nav-pills .nav-link:not(.active) .tab-badge.completed {
+    background: #d1fae5;
+    color: #059669;
+}
+
+/* Enhanced Alert Styles */
+.alert-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border: 1px solid #86efac;
+    color: #065f46;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
     .page-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 20px;
-        padding: 2rem;
-        color: white;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-    }
-    
-    .page-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        backdrop-filter: blur(10px);
+        padding: 1.5rem;
     }
     
     .page-title {
-        font-size: 2rem;
-        font-weight: 700;
-        margin: 0;
-    }
-    
-    .page-description {
-        opacity: 0.9;
-        font-size: 1.1rem;
-    }
-    
-    .breadcrumb {
-        background: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .breadcrumb-item a {
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-    }
-    
-    .breadcrumb-item.active {
-        color: white;
-    }
-    
-    /* Filter Tabs Container */
-    .filter-tabs-container {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
+        font-size: 1.5rem;
     }
     
     .filter-tabs-header {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        padding: 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .filter-icon {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-    }
-    
-    .filter-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #1e293b;
-    }
-    
-    .filter-subtitle {
-        color: #64748b;
-        font-size: 0.9rem;
-    }
-    
-    .filter-tabs-body {
-        padding: 1.5rem;
-    }
-    
-    /* Enhanced Nav Pills */
-    .nav-pills .nav-link {
-        background: #f8fafc;
-        border: 2px solid transparent;
-        border-radius: 15px;
         padding: 1rem;
-        margin: 0 0.5rem;
-        transition: all 0.3s ease;
-        color: #64748b;
-        font-weight: 500;
     }
     
-    .nav-pills .nav-link:hover {
-        background: #e2e8f0;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .nav-pills .nav-link.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-color: transparent;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    .nav-pills .nav-link {
+        padding: 1rem 0.5rem;
     }
     
     .tab-content-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .tab-icon {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
+        gap: 0.25rem;
     }
     
     .tab-label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-    
-    .tab-badge {
-        background: rgba(255, 255, 255, 0.2);
-        color: inherit;
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
         font-size: 0.8rem;
-        font-weight: 600;
-        min-width: 30px;
     }
-    
-    .nav-pills .nav-link:not(.active) .tab-badge {
-        background: #cbd5e1;
-        color: #475569;
-    }
-    
-    .nav-pills .nav-link:not(.active) .tab-badge.pending {
-        background: #fbbf24;
-        color: #92400e;
-    }
-    
-    .nav-pills .nav-link:not(.active) .tab-badge.progress {
-        background: #60a5fa;
-        color: #1e40af;
-    }
-    
-    .nav-pills .nav-link:not(.active) .tab-badge.completed {
-        background: #34d399;
-        color: #065f46;
-    }
-    
-    /* Button Styling */
-    .btn {
-        border-radius: 10px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-    }
-    
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-outline-primary {
-        color: #667eea;
-        border-color: #667eea;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-    }
-    
-    .btn-outline-primary:hover {
-        background: #667eea;
-        border-color: #667eea;
-        transform: translateY(-2px);
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .page-header {
-            padding: 1.5rem;
-        }
-        
-        .page-title {
-            font-size: 1.5rem;
-        }
-        
-        .nav-pills .nav-link {
-            margin: 0.25rem;
-            padding: 0.75rem;
-        }
-        
-        .tab-icon {
-            font-size: 1.2rem;
-        }
-        
-        .tab-label {
-            font-size: 0.8rem;
-        }
-    }
+}
 </style>
-@endpush
 @endsection

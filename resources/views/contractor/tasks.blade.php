@@ -635,3 +635,84 @@
 </script>
 @endpush
 @endsection
+
+<!-- Add this section after the existing task cards -->
+@foreach($tasks as $task)
+<div class="task-management-card mb-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">{{ $task->task_type }}</h5>
+                    <p class="text-muted mb-0">{{ $task->report->room->house->house_address }}</p>
+                </div>
+                <span class="badge bg-{{ $task->task_status == 'completed' ? 'success' : ($task->task_status == 'in_progress' ? 'warning' : 'secondary') }} rounded-pill px-3 py-2">
+                    {{ ucfirst(str_replace('_', ' ', $task->task_status)) }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="card-body p-4">
+            <!-- Phase Management -->
+            @if($task->phases->count() > 0)
+            <h6 class="mb-3">Phase Management</h6>
+            <div class="phases-container">
+                @foreach($task->phases as $phase)
+                <div class="phase-management-item mb-3 p-3 border rounded-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Phase {{ $phase->arrangement_number }}</h6>
+                        <span class="badge bg-{{ $phase->phase_status == 'completed' ? 'success' : ($phase->phase_status == 'in_progress' ? 'warning' : 'secondary') }}">
+                            {{ ucfirst(str_replace('_', ' ', $phase->phase_status)) }}
+                        </span>
+                    </div>
+                    
+                    @if($phase->phase_status != 'completed')
+                    <form action="{{ route('contractor.phases.update-status', $phase->phaseID) }}" method="POST" enctype="multipart/form-data" class="phase-update-form">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phase Status</label>
+                                <select name="phase_status" class="form-select" required>
+                                    <option value="pending" {{ $phase->phase_status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="in_progress" {{ $phase->phase_status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                    <option value="completed" {{ $phase->phase_status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phase Image (Optional)</label>
+                                <input type="file" name="phase_image" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-save me-1"></i>Update Phase
+                        </button>
+                    </form>
+                    @endif
+                    
+                    @if($phase->phase_image)
+                    <div class="mt-3">
+                        <img src="{{ Storage::url($phase->phase_image) }}" alt="Phase {{ $phase->arrangement_number }}" class="img-fluid rounded" style="max-height: 150px;">
+                    </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+            @else
+            <!-- Create Phases Button -->
+            @if($task->task_status == 'pending')
+            <form action="{{ route('contractor.tasks.create-phases', $task->taskID) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="fas fa-plus me-2"></i>Create Task Phases
+                </button>
+            </form>
+            @endif
+            @endif
+        </div>
+    </div>
+</div>
+@endforeach

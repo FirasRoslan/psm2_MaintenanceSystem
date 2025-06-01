@@ -107,6 +107,10 @@ Route::middleware('role:contractor')->group(function () {
     Route::put('/contractor/tasks/{task}/status', [ContractorViewController::class, 'updateTaskStatus'])->name('contractor.tasks.update-status');
     // Add this with your other contractor routes
     Route::get('/contractor/requests', [ContractorViewController::class, 'viewRequests'])->name('contractor.requests');
+    
+    // Phase management routes
+    Route::put('/contractor/phases/{phase}/status', [ContractorViewController::class, 'updatePhaseStatus'])->name('contractor.phases.update-status');
+    Route::post('/contractor/tasks/{task}/phases', [ContractorViewController::class, 'createTaskPhases'])->name('contractor.tasks.create-phases');
 });
 
 

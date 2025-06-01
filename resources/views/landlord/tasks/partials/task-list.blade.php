@@ -59,74 +59,35 @@
                                     r="34"
                                     cx="40"
                                     cy="40"
-                                    stroke-dasharray="{{ 213.6 * ($task->progress_percentage / 100) }} 213.6"
+                                    stroke-dasharray="{{ 213.6 * (($task->progress_percentage ?? 0) / 100) }} 213.6"
                                     stroke-dashoffset="0"
                                     transform="rotate(-90 40 40)"
                                     class="progress-stroke"/>
                             </svg>
                             <div class="progress-text">
-                                <span class="progress-percentage">{{ $task->progress_percentage }}%</span>
+                                <span class="progress-percentage">{{ $task->progress_percentage ?? 0 }}%</span>
                                 <span class="progress-label">Complete</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Phase Timeline -->
-                @if($task->phases->count() > 0)
-                <div class="phase-section">
-                    <h6 class="phase-title">Phase Progress</h6>
-                    <div class="phase-timeline">
-                        @foreach($task->phases as $phase)
-                        <div class="phase-item">
-                            <div class="phase-indicator 
-                                @if($phase->phase_status == 'completed') phase-completed
-                                @elseif($phase->phase_status == 'in_progress') phase-active
-                                @else phase-pending
-                                @endif">
-                                @if($phase->phase_status == 'completed')
-                                    <i class="fas fa-check"></i>
-                                @elseif($phase->phase_status == 'in_progress')
-                                    <i class="fas fa-play"></i>
-                                @else
-                                    {{ $phase->arrangement_number }}
-                                @endif
-                            </div>
-                            <div class="phase-content">
-                                <p class="phase-name">Phase {{ $phase->arrangement_number }}</p>
-                                <p class="phase-status-text">
-                                    @if($phase->phase_status == 'completed')
-                                        Completed {{ $phase->end_timestamp ? $phase->end_timestamp->format('M d, Y') : '' }}
-                                    @elseif($phase->phase_status == 'in_progress')
-                                        Started {{ $phase->start_timestamp ? $phase->start_timestamp->format('M d, Y') : '' }}
-                                    @else
-                                        Pending
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @else
-                <div class="no-phases">
-                    <div class="no-phases-icon">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <p class="no-phases-text">No phases defined yet</p>
-                </div>
-                @endif
-
-                <!-- Task Footer -->
+                <!-- Task Info Footer -->
                 <div class="task-footer">
-                    <div class="task-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Assigned</span>
-                            <span class="stat-value">{{ $task->created_at->format('M d, Y') }}</span>
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt meta-icon"></i>
+                            <div class="meta-content">
+                                <span class="meta-label">Assigned</span>
+                                <span class="meta-value">{{ $task->created_at->format('M d, Y') }}</span>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Phases</span>
-                            <span class="stat-value">{{ $task->phases->count() }}</span>
+                        <div class="meta-item">
+                            <i class="fas fa-layer-group meta-icon"></i>
+                            <div class="meta-content">
+                                <span class="meta-label">Phases</span>
+                                <span class="meta-value">{{ $task->phases->count() }}/{{ $task->phases->count() }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -136,444 +97,379 @@
     </div>
 @else
     <div class="empty-state">
-        <div class="empty-state-content">
-            <div class="empty-icon">
-                <i class="fas fa-tasks"></i>
-            </div>
-            <h5 class="empty-title">No Tasks Found</h5>
-            <p class="empty-description">There are no tasks in this category yet. Tasks will appear here once they are assigned to contractors.</p>
-            <a href="{{ route('landlord.requests.index') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Assign New Task
+        <div class="empty-state-icon">
+            <i class="fas fa-tasks"></i>
+        </div>
+        <h4 class="empty-state-title">No tasks found</h4>
+        <p class="empty-state-description">There are no maintenance tasks to display at the moment.</p>
+        <div class="empty-state-action">
+            <a href="{{ route('landlord.dashboard') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create New Task
             </a>
         </div>
     </div>
 @endif
 
-@push('styles')
 <style>
-    /* Tasks Grid */
+/* Enhanced Task Grid */
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
+
+/* Enhanced Task Card */
+.task-card-wrapper {
+    perspective: 1000px;
+}
+
+.task-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    border: 1px solid #f1f5f9;
+}
+
+.task-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.task-card:hover {
+    transform: translateY(-10px) rotateX(5deg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Task Header */
+.task-header {
+    padding: 1.5rem 1.5rem 1rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    position: relative;
+}
+
+.task-info {
+    flex: 1;
+}
+
+.task-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.task-location {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.task-details {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.task-status {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+}
+
+.status-progress {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.status-completed {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+/* Contractor Section */
+.contractor-section {
+    padding: 0 1.5rem 1rem;
+}
+
+.contractor-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+}
+
+.contractor-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.contractor-details {
+    flex: 1;
+}
+
+.contractor-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.contractor-email {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Progress Section */
+.progress-section {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    background: #fafbfc;
+}
+
+.progress-circle-container {
+    position: relative;
+}
+
+.progress-circle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.progress-stroke {
+    transition: stroke-dasharray 0.6s ease-in-out;
+    stroke-linecap: round;
+}
+
+.progress-text {
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.progress-percentage {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.progress-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+}
+
+/* Task Footer */
+.task-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    background: white;
+}
+
+.task-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.meta-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.meta-content {
+    flex: 1;
+}
+
+.meta-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.meta-value {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* Enhanced Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f1f5f9;
+}
+
+.empty-state-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 2.5rem;
+    color: #94a3b8;
+}
+
+.empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.empty-state-description {
+    font-size: 1rem;
+    color: #64748b;
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-state-action .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.empty-state-action .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
     .tasks-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-        gap: 2rem;
-        padding: 1rem 0;
-    }
-    
-    .task-card-wrapper {
-        height: 100%;
-    }
-    
-    .task-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        border: 1px solid #f1f5f9;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
     
     .task-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        border-color: #e2e8f0;
     }
     
-    /* Task Header */
     .task-header {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        padding: 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .task-info {
-        margin-bottom: 1rem;
-    }
-    
-    .task-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.5rem;
-    }
-    
-    .task-location {
-        color: #64748b;
-        font-size: 0.9rem;
-        margin-bottom: 0.25rem;
-        font-weight: 500;
-    }
-    
-    .task-details {
-        color: #94a3b8;
-        font-size: 0.85rem;
-        margin: 0;
+        padding: 1rem;
     }
     
     .task-status {
-        display: flex;
-        justify-content: flex-end;
+        position: static;
+        margin-top: 1rem;
     }
     
-    /* Status Badges */
-    .status-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .status-pending {
-        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-        color: white;
-    }
-    
-    .status-progress {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        color: white;
-    }
-    
-    .status-completed {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-    }
-    
-    /* Contractor Section */
     .contractor-section {
-        padding: 1.5rem;
-        border-bottom: 1px solid #f1f5f9;
+        padding: 0 1rem 1rem;
     }
     
-    .contractor-info {
-        display: flex;
-        align-items: center;
-    }
-    
-    .contractor-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 1.1rem;
-        margin-right: 1rem;
-    }
-    
-    .contractor-name {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.25rem;
-    }
-    
-    .contractor-email {
-        color: #64748b;
-        font-size: 0.85rem;
-        margin: 0;
-    }
-    
-    /* Progress Section */
     .progress-section {
-        padding: 1.5rem;
-        text-align: center;
-        border-bottom: 1px solid #f1f5f9;
+        padding: 1rem;
     }
     
-    .progress-circle-container {
-        display: flex;
-        justify-content: center;
+    .task-footer {
+        padding: 1rem;
     }
     
-    .progress-circle {
-        position: relative;
-        display: inline-block;
+    .task-meta {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .empty-state {
+        padding: 2rem 1rem;
     }
     
-    .progress-ring {
+    .empty-state-icon {
         width: 80px;
         height: 80px;
-        transform: rotate(-90deg);
+        font-size: 2rem;
     }
-    
-    .progress-stroke {
-        transition: stroke-dasharray 0.8s ease;
-    }
-    
-    .progress-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
-    
-    .progress-percentage {
-        display: block;
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #1e293b;
-    }
-    
-    .progress-label {
-        display: block;
-        font-size: 0.7rem;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    /* Phase Section */
-    .phase-section {
-        padding: 1.5rem;
-        flex-grow: 1;
-    }
-    
-    .phase-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 1rem;
-    }
-    
-    .phase-timeline {
-        position: relative;
-    }
-    
-    .phase-timeline::before {
-        content: '';
-        position: absolute;
-        left: 18px;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: linear-gradient(to bottom, #e2e8f0 0%, #f1f5f9 100%);
-    }
-    
-    .phase-item {
-        position: relative;
-        padding-left: 50px;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-    }
-    
-    .phase-item:last-child {
-        margin-bottom: 0;
-    }
-    
-    .phase-indicator {
-        position: absolute;
-        left: 0;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem;
-        font-weight: 600;
-        z-index: 1;
-        border: 3px solid white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .phase-completed {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-    }
-    
-    .phase-active {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        color: white;
-        animation: pulse 2s infinite;
-    }
-    
-    .phase-pending {
-        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-        color: white;
-    }
-    
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-    }
-    
-    .phase-content {
-        flex-grow: 1;
-    }
-    
-    .phase-name {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.25rem;
-    }
-    
-    .phase-status-text {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin: 0;
-    }
-    
-    /* No Phases */
-    .no-phases {
-        padding: 2rem 1.5rem;
-        text-align: center;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    
-    .no-phases-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        font-size: 1.5rem;
-        color: #94a3b8;
-    }
-    
-    .no-phases-text {
-        color: #64748b;
-        font-size: 0.9rem;
-        margin: 0;
-    }
-    
-    /* Task Footer */
-    .task-footer {
-        padding: 1.5rem;
-        background: #f8fafc;
-        border-top: 1px solid #f1f5f9;
-        margin-top: auto;
-    }
-    
-    .task-stats {
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .stat-item {
-        text-align: center;
-        flex: 1;
-    }
-    
-    .stat-label {
-        display: block;
-        font-size: 0.8rem;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.25rem;
-    }
-    
-    .stat-value {
-        display: block;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #1e293b;
-    }
-    
-    /* Empty State */
-    .empty-state {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 400px;
-        padding: 2rem;
-    }
-    
-    .empty-state-content {
-        text-align: center;
-        max-width: 400px;
-    }
-    
-    .empty-icon {
-        width: 100px;
-        height: 100px;
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 2rem;
-        font-size: 2.5rem;
-        color: #94a3b8;
-    }
-    
-    .empty-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 1rem;
-    }
-    
-    .empty-description {
-        color: #64748b;
-        margin-bottom: 2rem;
-        line-height: 1.6;
-    }
-    
-    /* Button Styling */
-    .btn {
-        border-radius: 10px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        padding: 0.75rem 1.5rem;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-    }
-    
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .tasks-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-        
-        .task-header,
-        .contractor-section,
-        .progress-section,
-        .phase-section,
-        .task-footer {
-            padding: 1rem;
-        }
-        
-        .phase-item {
-            padding-left: 40px;
-        }
-        
-        .phase-indicator {
-            width: 30px;
-            height: 30px;
-            font-size: 0.7rem;
-        }
-        
-        .phase-timeline::before {
-            left: 15px;
-        }
-    }
+}
 </style>
-@endpush
