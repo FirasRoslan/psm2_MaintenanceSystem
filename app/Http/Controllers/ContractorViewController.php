@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\House;
 use App\Models\User;
 use App\Models\Task;
+use App\Models\Phase;
 use App\Models\ContractorLandlord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ContractorViewController extends Controller
 {
@@ -135,7 +137,7 @@ class ContractorViewController extends Controller
     {
         $validated = $request->validate([
             'phase_status' => 'required|in:pending,in_progress,completed',
-            'phase_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'phase_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
         
         $phase = Phase::findOrFail($phaseId);
@@ -148,6 +150,11 @@ class ContractorViewController extends Controller
         
         // Handle image upload if provided
         if ($request->hasFile('phase_image')) {
+            // Delete old image if exists
+            if ($phase->phase_image) {
+                Storage::disk('public')->delete($phase->phase_image);
+            }
+            
             $imagePath = $request->file('phase_image')->store('phases', 'public');
             $phase->phase_image = $imagePath;
         }
@@ -172,10 +179,17 @@ class ContractorViewController extends Controller
     /**
      * Create phases for a task when contractor accepts it
      */
-    public function createTaskPhases(Task $task, $phaseCount = 3)
+    public function createTaskPhases(Request $request, Task $task)
     {
+        // Ensure the contractor owns this task
+        if ($task->userID !== Auth::id()) {
+            abort(403, 'Unauthorized access to this task.');
+        }
+        
         // Create default phases if none exist
         if ($task->phases()->count() === 0) {
+            $phaseCount = $request->input('phase_count', 3); // Default to 3 phases
+            
             for ($i = 1; $i <= $phaseCount; $i++) {
                 Phase::create([
                     'taskID' => $task->taskID,
@@ -183,7 +197,11 @@ class ContractorViewController extends Controller
                     'phase_status' => 'pending'
                 ]);
             }
+            
+            return back()->with('success', 'Task phases created successfully.');
         }
+        
+        return back()->with('info', 'Phases already exist for this task.');
     }
     
     /**
@@ -301,5 +319,97 @@ class ContractorViewController extends Controller
         $rejectedRequests = $allRequests->where('approval_status', 0);
         
         return view('contractor.requests', compact('allRequests', 'pendingRequests', 'approvedRequests', 'rejectedRequests'));
+    }
+    
+    /**
+     * Update maintenance progress - enforces proper workflow
+     */
+    public function updateMaintenanceProgress(Request $request, Task $task)
+    {
+        // Ensure the contractor owns this task
+        if ($task->userID !== Auth::id()) {
+            abort(403, 'Unauthorized access to this task.');
+        }
+        
+        // Different validation rules based on action
+        if ($request->action === 'submit_completion') {
+            $validated = $request->validate([
+                'action' => 'required|in:start_work,submit_completion',
+                'completion_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'completion_notes' => 'nullable|string|max:1000'
+            ]);
+        } else {
+            $validated = $request->validate([
+                'action' => 'required|in:start_work,submit_completion',
+                'completion_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'completion_notes' => 'nullable|string|max:1000'
+            ]);
+        }
+        
+        DB::beginTransaction();
+        
+        try {
+            if ($validated['action'] === 'start_work') {
+                // Move from Pending to In Progress
+                if ($task->task_status !== 'pending') {
+                    return back()->with('error', 'Task cannot be started from current status.');
+                }
+                
+                $task->task_status = 'in_progress';
+                $task->save();
+                
+                // Update report status
+                $task->report->report_status = 'In Progress';
+                $task->report->save();
+                
+                $message = 'Task started successfully. You can now work on the maintenance.';
+                
+            } elseif ($validated['action'] === 'submit_completion') {
+                // Move from In Progress to Awaiting Approval
+                if ($task->task_status !== 'in_progress') {
+                    return back()->with('error', 'Task must be in progress to submit completion.');
+                }
+                
+                // Handle completion proof image upload
+                $completionImagePath = null;
+                if ($request->hasFile('completion_image')) {
+                    $completionImagePath = $request->file('completion_image')->store('task_completions', 'public');
+                }
+                
+                $task->task_status = 'awaiting_approval';
+                $task->completion_image = $completionImagePath;
+                $task->completion_notes = $validated['completion_notes'];
+                $task->submitted_at = now();
+                $task->save();
+                
+                // Update report status
+                $task->report->report_status = 'Awaiting Approval';
+                $task->report->save();
+                
+                $message = 'Completion submitted successfully. Waiting for landlord approval.';
+            }
+            
+            DB::commit();
+            return back()->with('success', $message);
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'An error occurred while updating the task.');
+        }
+    }
+    
+    /**
+     * Get maintenance progress status for display
+     */
+    public function getMaintenanceProgress(Task $task)
+    {
+        $progress = [
+            'pending' => ['status' => 'pending', 'label' => 'Task Assigned', 'icon' => 'fas fa-clock', 'color' => 'secondary'],
+            'in_progress' => ['status' => 'in_progress', 'label' => 'Work in Progress', 'icon' => 'fas fa-tools', 'color' => 'info'],
+            'awaiting_approval' => ['status' => 'awaiting_approval', 'label' => 'Awaiting Approval', 'icon' => 'fas fa-hourglass-half', 'color' => 'warning'],
+            'completed' => ['status' => 'completed', 'label' => 'Completed', 'icon' => 'fas fa-check-circle', 'color' => 'success']
+        ];
+        
+        return $progress;
     }
 }

@@ -89,6 +89,15 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="awaiting-tab" data-bs-toggle="pill" data-bs-target="#awaiting" type="button" role="tab">
+                        <div class="tab-content-wrapper">
+                            <i class="fas fa-hourglass-half tab-icon"></i>
+                            <span class="tab-label">Awaiting Approval</span>
+                            <span class="tab-badge awaiting">{{ $tasksByStatus->get('awaiting_approval', collect())->count() }}</span>
+                        </div>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
                         <div class="tab-content-wrapper">
                             <i class="fas fa-check tab-icon"></i>
@@ -121,6 +130,11 @@
         <!-- Completed Tasks -->
         <div class="tab-pane fade" id="completed" role="tabpanel">
             @include('landlord.tasks.partials.task-list', ['tasks' => $tasksByStatus->get('completed', collect())])
+        </div>
+        
+        <!-- Add awaiting approval tab content -->
+        <div class="tab-pane fade" id="awaiting" role="tabpanel">
+            @include('landlord.tasks.partials.task-list', ['tasks' => $tasksByStatus->get('awaiting_approval', collect())])
         </div>
     </div>
 </div>
@@ -324,6 +338,11 @@
 .nav-pills .nav-link:not(.active) .tab-badge.completed {
     background: #d1fae5;
     color: #059669;
+}
+
+.tab-badge.awaiting {
+    background-color: #fbbf24;
+    color: #92400e;
 }
 
 /* Enhanced Alert Styles */

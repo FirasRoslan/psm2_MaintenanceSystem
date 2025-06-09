@@ -1,3 +1,17 @@
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 @if($tasks->count() > 0)
     <div class="tasks-grid">
         @foreach($tasks as $task)
@@ -14,12 +28,15 @@
                         <span class="status-badge 
                             @if($task->task_status == 'pending') status-pending
                             @elseif($task->task_status == 'in_progress') status-progress
+                            @elseif($task->task_status == 'awaiting_approval') status-awaiting
                             @elseif($task->task_status == 'completed') status-completed
                             @endif">
                             @if($task->task_status == 'pending') 
                                 <i class="fas fa-clock me-1"></i>Pending
                             @elseif($task->task_status == 'in_progress') 
                                 <i class="fas fa-tools me-1"></i>In Progress
+                            @elseif($task->task_status == 'awaiting_approval') 
+                                <i class="fas fa-hourglass-half me-1"></i>Awaiting Approval
                             @elseif($task->task_status == 'completed') 
                                 <i class="fas fa-check me-1"></i>Completed
                             @endif
@@ -90,9 +107,151 @@
                             </div>
                         </div>
                     </div>
+                    
+                    @if($task->task_status == 'awaiting_approval')
+                    <!-- Completion Info Section -->
+                    <div class="completion-info mt-3 p-3 bg-light rounded">
+                        <h6 class="mb-2"><i class="fas fa-check-circle text-success me-1"></i>Task Completed - Awaiting Your Approval</h6>
+                        
+                        @if($task->submitted_at)
+                        <p class="text-muted mb-2"><small><i class="fas fa-clock me-1"></i>Submitted: {{ $task->submitted_at->format('M d, Y h:i A') }}</small></p>
+                        @endif
+                        
+                        @if($task->completion_notes)
+                        <div class="mb-2">
+                            <strong>Contractor Notes:</strong>
+                            <p class="text-muted mb-0">{{ Str::limit($task->completion_notes, 100) }}</p>
+                        </div>
+                        @endif
+                        
+                        <!-- Action Buttons -->
+                        <div class="task-actions d-flex gap-2 mt-3">
+                            @if($task->completion_image)
+                            <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewProofModal{{ $task->taskID }}">
+                                <i class="fas fa-image me-1"></i>View Proof
+                            </button>
+                            @endif
+                            
+                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal{{ $task->taskID }}">
+                                <i class="fas fa-check me-1"></i>Approve
+                            </button>
+                            
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $task->taskID }}">
+                                <i class="fas fa-times me-1"></i>Reject
+                            </button>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
+        @if($task->task_status == 'awaiting_approval')
+        <!-- Approve Modal -->
+        <div class="modal fade" id="approveModal{{ $task->taskID }}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Approve Task Completion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            @if($task->completion_image)
+                            <div class="col-md-6">
+                                <h6>Completion Proof:</h6>
+                                <img src="{{ asset('storage/' . $task->completion_image) }}" alt="Completion Proof" class="img-fluid rounded mb-3" style="max-height: 300px;">
+                            </div>
+                            @endif
+                            
+                            <div class="{{ $task->completion_image ? 'col-md-6' : 'col-12' }}">
+                                <h6>Task Details:</h6>
+                                <p><strong>Task:</strong> {{ $task->task_type }}</p>
+                                <p><strong>Location:</strong> {{ $task->report->room->house->house_address }}</p>
+                                <p><strong>Room:</strong> {{ $task->report->room->room_type }}</p>
+                                <p><strong>Item:</strong> {{ $task->report->item->item_name }}</p>
+                                
+                                @if($task->completion_notes)
+                                <div class="mt-3">
+                                    <h6>Contractor Notes:</h6>
+                                    <div class="alert alert-info">
+                                        {{ $task->completion_notes }}
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                @if($task->submitted_at)
+                                <p class="text-muted"><small>Submitted: {{ $task->submitted_at->format('M d, Y h:i A') }}</small></p>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            <strong>Are you sure you want to approve this task as completed?</strong>
+                            <br><small>This action will mark the task as completed and notify the contractor.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form action="{{ route('landlord.tasks.approve', $task->taskID) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-success">Approve Task</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reject Modal -->
+        <div class="modal fade" id="rejectModal{{ $task->taskID }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reject Task Completion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ route('landlord.tasks.reject', $task->taskID) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="rejection_reason{{ $task->taskID }}" class="form-label">Reason for Rejection *</label>
+                                <textarea class="form-control" id="rejection_reason{{ $task->taskID }}" name="rejection_reason" rows="3" required placeholder="Please explain why you're rejecting this completion..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Reject Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Proof Modal -->
+        @if($task->completion_image)
+        <div class="modal fade" id="viewProofModal{{ $task->taskID }}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Completion Proof</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="{{ asset('storage/' . $task->completion_image) }}" alt="Completion Proof" class="img-fluid rounded" style="max-height: 400px;">
+                        @if($task->completion_notes)
+                        <div class="mt-3">
+                            <h6>Contractor Notes:</h6>
+                            <p class="text-muted">{{ $task->completion_notes }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @endif
         @endforeach
     </div>
 @else
@@ -210,6 +369,11 @@
 .status-completed {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
+}
+
+.status-awaiting {
+    background-color: #fbbf24;
+    color: #92400e;
 }
 
 /* Contractor Section */
@@ -472,4 +636,44 @@
         font-size: 2rem;
     }
 }
+
+    
 </style>
+
+<script>
+// Add this script at the end of the file, before the closing </style> tag
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle form submissions with loading states
+    const forms = document.querySelectorAll('form[action*="approve"], form[action*="reject"]');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+            }
+        });
+    });
+    
+    // Handle modal close events
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function() {
+            // Reset any form states when modal is closed
+            const forms = modal.querySelectorAll('form');
+            forms.forEach(form => {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    if (submitBtn.textContent.includes('Approve')) {
+                        submitBtn.innerHTML = 'Approve Task';
+                    } else if (submitBtn.textContent.includes('Reject')) {
+                        submitBtn.innerHTML = 'Reject Task';
+                    }
+                }
+            });
+        });
+    });
+});
+</script>

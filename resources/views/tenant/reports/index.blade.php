@@ -245,6 +245,8 @@
                                                 data-report-date="{{ $report->created_at->format('M d, Y') }}"
                                                 data-report-property="{{ $report->room->house->house_address }}"
                                                 data-report-room="{{ $report->room->room_type }}"
+                                                data-report-item="{{ $report->item->item_name }}"
+                                                data-report-image="{{ $report->report_image }}"
                                                 data-report-description="{{ $report->report_description }}"
                                                 data-report-status="{{ $report->report_status }}">
                                             <i class="fas fa-eye me-1"></i>View
@@ -424,6 +426,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const reportDate = button.getAttribute('data-report-date');
         const reportProperty = button.getAttribute('data-report-property');
         const reportRoom = button.getAttribute('data-report-room');
+        const reportItem = button.getAttribute('data-report-item');
+        const reportImage = button.getAttribute('data-report-image');
         const reportDescription = button.getAttribute('data-report-description');
         const reportStatus = button.getAttribute('data-report-status');
         
@@ -448,16 +452,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     <label class="form-label fw-bold text-muted">Room</label>
                     <p class="fw-medium">${reportRoom}</p>
                 </div>
-                <div class="col-12 mb-3">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted">Item/Area</label>
+                    <p class="fw-medium">${reportItem}</p>
+                </div>
+                <div class="col-md-6 mb-3">
                     <label class="form-label fw-bold text-muted">Status</label>
                     <p><span class="badge bg-${statusClass} bg-opacity-10 text-${statusClass} px-3 py-2 rounded-pill">
                         <i class="fas fa-${statusIcon} me-1"></i>${reportStatus}
                     </span></p>
                 </div>
-                <div class="col-12">
+                <div class="col-12 mb-3">
                     <label class="form-label fw-bold text-muted">Description</label>
                     <div class="bg-light p-3 rounded-3">
                         <p class="mb-0">${reportDescription}</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold text-muted">Submitted Image</label>
+                    <div class="mt-2">
+                        <img src="/storage/${reportImage}" alt="Report Image" class="img-fluid rounded-3 shadow-sm" style="max-height: 300px; max-width: 100%;">
                     </div>
                 </div>
             </div>

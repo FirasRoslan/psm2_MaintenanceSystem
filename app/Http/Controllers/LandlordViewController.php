@@ -10,6 +10,7 @@ use App\Models\House;
 use App\Models\ContractorLandlord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LandlordViewController extends Controller
 {
@@ -329,5 +330,83 @@ class LandlordViewController extends Controller
         }
         
         return view('landlord.requests.show', compact('report'));
+    }
+
+    /**
+     * Approve a completed task
+     */
+    public function approveTask(Request $request, Task $task)
+    {
+        $user = Auth::user();
+        
+        // Ensure the task belongs to a property owned by this landlord
+        if ($task->report->room->house->userID !== $user->userID) {
+            return back()->with('error', 'Unauthorized access to this task.');
+        }
+        
+        // Ensure the task is in awaiting_approval status
+        if ($task->task_status !== 'awaiting_approval') {
+            return back()->with('error', 'Task is not awaiting approval.');
+        }
+        
+        try {
+            // Update task status to completed
+            $task->task_status = 'completed';
+            $task->save();
+            
+            // Update report status
+            $task->report->report_status = 'Completed';
+            $task->report->save();
+            
+            return back()->with('success', 'Task approved and marked as completed successfully.');
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while approving the task: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject a completed task
+     */
+    public function rejectTask(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:1000'
+        ]);
+        
+        $user = Auth::user();
+        
+        // Ensure the task belongs to a property owned by this landlord
+        if ($task->report->room->house->userID !== $user->userID) {
+            abort(403, 'Unauthorized access to this task.');
+        }
+        
+        // Ensure the task is in awaiting_approval status
+        if ($task->task_status !== 'awaiting_approval') {
+            return back()->with('error', 'Task is not awaiting approval.');
+        }
+        
+        DB::beginTransaction();
+        
+        try {
+            // Update task status back to in_progress
+            $task->task_status = 'in_progress';
+            $task->task_notes = ($task->task_notes ? $task->task_notes . '\n\n' : '') . 'Rejection Reason: ' . $validated['rejection_reason'];
+            $task->completion_image = null; // Clear the completion image
+            $task->completion_notes = null; // Clear the completion notes
+            $task->submitted_at = null; // Clear the submission timestamp
+            $task->save();
+            
+            // Update report status
+            $task->report->report_status = 'In Progress';
+            $task->report->save();
+            
+            DB::commit();
+            return back()->with('success', 'Task rejected and sent back to contractor for revision.');
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'An error occurred while rejecting the task.');
+        }
     }
 }

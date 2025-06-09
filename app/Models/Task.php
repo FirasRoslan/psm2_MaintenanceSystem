@@ -10,6 +10,11 @@ class Task extends Model
     use HasFactory;
 
     protected $primaryKey = 'taskID';
+    
+    public function getRouteKeyName()
+    {
+        return 'taskID';
+    }
 
     protected $fillable = [
         'reportID',
@@ -17,11 +22,16 @@ class Task extends Model
         'task_type',
         'task_status',
         'task_notes',
-        'completed_at'
+        'completion_image',
+        'completion_notes',
+        'completed_at',
+        'submitted_at'
     ];
 
-    protected $dates = [
-        'completed_at'
+    // Replace the old $dates property with $casts
+    protected $casts = [
+        'completed_at' => 'datetime',
+        'submitted_at' => 'datetime'
     ];
 
     public function report()
@@ -39,9 +49,6 @@ class Task extends Model
         return $this->hasMany(Phase::class, 'taskID');
     }
     
-    /**
-     * Get the progress percentage based on completed phases
-     */
     public function getProgressPercentageAttribute()
     {
         $totalPhases = $this->phases()->count();
@@ -51,14 +58,22 @@ class Task extends Model
         return round(($completedPhases / $totalPhases) * 100);
     }
     
-    /**
-     * Get the current active phase
-     */
     public function getCurrentPhaseAttribute()
     {
         return $this->phases()
             ->where('phase_status', 'in_progress')
             ->orderBy('arrangement_number')
             ->first();
+    }
+
+    public function setTaskStatusAttribute($value)
+    {
+        $allowedStatuses = ['pending', 'in_progress', 'awaiting_approval', 'completed'];
+        
+        if (!in_array($value, $allowedStatuses)) {
+            throw new \InvalidArgumentException("Invalid task status: {$value}");
+        }
+        
+        $this->attributes['task_status'] = $value;
     }
 }

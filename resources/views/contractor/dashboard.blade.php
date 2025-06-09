@@ -55,6 +55,70 @@
             </div>
             @endif
             
+            <!-- New Task Notifications -->
+            @if(isset($newTasks) && $newTasks->count() > 0)
+            <div class="card border-0 shadow-sm rounded-4 bg-gradient-warning text-dark mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="notification-icon">
+                                <i class="fas fa-tasks fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-1 fw-bold">🔧 New Task{{ $newTasks->count() > 1 ? 's' : '' }} Assigned</h5>
+                            <p class="mb-3 opacity-90">
+                                @if($newTasks->count() == 1)
+                                    You have <strong>1 new maintenance task</strong> assigned by a landlord.
+                                @else
+                                    You have <strong>{{ $newTasks->count() }} new maintenance tasks</strong> assigned by landlords.
+                                @endif
+                            </p>
+                            <div class="row g-2">
+                                @foreach($newTasks->take(3) as $task)
+                                    <div class="col-12">
+                                        <div class="bg-white bg-opacity-20 rounded-3 p-3 mb-2">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1 fw-bold">{{ $task->report->item->item_name ?? 'General Maintenance' }}</h6>
+                                                    <p class="mb-1 small opacity-75">
+                                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                                        {{ $task->report->room->room_name ?? 'N/A' }} - {{ $task->report->room->house->house_name ?? 'N/A' }}
+                                                    </p>
+                                                    <p class="mb-0 small opacity-75">
+                                                        <i class="fas fa-user me-1"></i>
+                                                        Reported by: {{ $task->report->user->name ?? 'N/A' }}
+                                                    </p>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                                        <i class="fas fa-clock me-1"></i>New
+                                                    </span>
+                                                    <div class="mt-2">
+                                                        <small class="opacity-75">{{ $task->created_at->diffForHumans() }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-3">
+                                <a href="{{ route('contractor.tasks') }}" class="btn btn-dark btn-sm rounded-pill px-4 me-2">
+                                    <i class="fas fa-tasks me-1"></i> View All Tasks
+                                </a>
+                                @if($newTasks->count() > 3)
+                                    <span class="badge bg-dark rounded-pill px-3 py-2">
+                                        +{{ $newTasks->count() - 3 }} more tasks
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+            
             <!-- New Approval Notifications -->
             @if(isset($recentlyApprovedLandlords) && $recentlyApprovedLandlords->count() > 0)
             <div class="card border-0 shadow-sm rounded-4 bg-gradient-success text-white mb-4">
@@ -120,11 +184,20 @@
                 <div class="card-body p-4 text-center">
                     <div class="action-icon bg-warning-light mb-3">
                         <i class="fas fa-tasks text-warning"></i>
+                        @if($pendingTasks > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $pendingTasks }}
+                                <span class="visually-hidden">pending tasks</span>
+                            </span>
+                        @endif
                     </div>
                     <h5 class="card-title fw-bold mb-2">My Tasks</h5>
                     <p class="card-text text-muted mb-4">View and manage your assigned maintenance tasks</p>
                     <a href="{{ route('contractor.tasks') }}" class="btn btn-warning rounded-pill px-4 w-100">
                         <i class="fas fa-tasks me-2"></i>View Tasks
+                        @if($pendingTasks > 0)
+                            <span class="badge bg-dark rounded-pill ms-2">{{ $pendingTasks }}</span>
+                        @endif
                     </a>
                 </div>
             </div>
@@ -153,7 +226,7 @@
                     </div>
                     <h5 class="card-title fw-bold mb-2">My Profile</h5>
                     <p class="card-text text-muted mb-4">Update your information and specializations</p>
-                    <a href="#" class="btn btn-success rounded-pill px-4 w-100">
+                    <a href="{{ route('profile.show') }}" class="btn btn-success rounded-pill px-4 w-100">
                         <i class="fas fa-user me-2"></i>View Profile
                     </a>
                 </div>
