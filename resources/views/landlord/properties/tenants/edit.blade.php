@@ -4,23 +4,38 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Header Section -->
-    <div class="mb-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-2">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('landlord.dashboard') }}" class="text-decoration-none">
-                        <i class="fas fa-home me-1"></i>Dashboard
+    <!-- Enhanced Header Section -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('landlord.dashboard') }}" class="text-decoration-none">
+                                <i class="fas fa-home me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('landlord.tenants.index') }}" class="text-decoration-none">Tenants</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit {{ $tenant->name }}</li>
+                    </ol>
+                </nav>
+                <div class="page-title-section">
+                    <h2 class="page-title mb-2">
+                        <i class="fas fa-user-edit me-2"></i>Edit Tenant Assignment
+                    </h2>
+                    <p class="page-subtitle mb-0">Update tenant information and property assignment</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="page-actions text-end">
+                    <a href="{{ route('landlord.tenants.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Tenants
                     </a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{{ route('landlord.tenants.index') }}" class="text-decoration-none">Tenants</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Edit {{ $tenant->name }}</li>
-            </ol>
-        </nav>
-        <h2 class="mb-1 fw-bold">Edit Tenant Assignment</h2>
-        <p class="text-muted mb-0">Update tenant information and property assignment</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row justify-content-center">
@@ -191,6 +206,97 @@
 
 @push('styles')
 <style>
+:root {
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #a5b4fc;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+}
+
+/* Enhanced Page Header Styles */
+.page-header {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+}
+
+.page-title-section .page-title {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.breadcrumb {
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.breadcrumb-item.active {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.page-actions .btn {
+    border-radius: 12px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-outline-secondary {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    color: var(--primary-color);
+    backdrop-filter: blur(10px);
+}
+
+.btn-outline-secondary:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
 .form-floating > .form-control:focus,
 .form-floating > .form-select:focus {
     border-color: var(--primary-color);
@@ -214,22 +320,43 @@
     font-size: 1.2rem;
 }
 
-.breadcrumb-item a {
-    color: var(--primary-color);
-}
-
-.breadcrumb-item a:hover {
-    color: var(--primary-dark);
-}
-
 .card {
     border-radius: 16px;
     backdrop-filter: blur(10px);
+    border: 1px solid rgba(99, 102, 241, 0.1);
 }
 
 .btn-lg {
     border-radius: 12px;
     font-weight: 500;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .page-actions {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
 }
 </style>
 @endpush

@@ -4,38 +4,32 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Modern Header Card -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-        <div class="card-body p-4">
-            <div class="row align-items-center">
-                <div class="col">
-                    <!-- Breadcrumb -->
-                    <nav aria-label="breadcrumb" class="mb-3">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('tenant.assigned-houses') }}" class="text-white text-decoration-none opacity-75">
-                                    <i class="fas fa-home me-1"></i>My Properties
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active text-white" aria-current="page">
-                                Property Details
-                            </li>
-                        </ol>
-                    </nav>
-                    
-                    <!-- Title Section -->
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="icon-container me-3">
-                            <i class="fas fa-building text-white fa-2x"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-white fw-bold mb-1 display-6">{{ $house->house_address }}</h1>
-                            <p class="text-white opacity-90 mb-0 fs-5">Property Details & Room Management</p>
-                        </div>
-                    </div>
+    <!-- Enhanced Header Section -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('tenant.assigned-houses') }}" class="text-decoration-none">
+                                <i class="fas fa-home me-1"></i>My Properties
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Property Details
+                        </li>
+                    </ol>
+                </nav>
+                <div class="page-title-section">
+                    <h2 class="page-title mb-2">
+                        <i class="fas fa-building me-2"></i>{{ $house->house_address }}
+                    </h2>
+                    <p class="page-subtitle mb-0">Property Details & Room Management</p>
                 </div>
-                <div class="col-auto">
-                    <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-light rounded-pill px-4 py-2 shadow-sm">
+            </div>
+            <div class="col-md-4">
+                <div class="page-actions text-end">
+                    <a href="{{ route('tenant.assigned-houses') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Back to My Properties
                     </a>
                 </div>
@@ -329,61 +323,96 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('styles')
 <style>
-    /* Modern Header Styles */
-    .breadcrumb-item + .breadcrumb-item::before {
-        content: ">";
-        color: rgba(255, 255, 255, 0.7);
-        font-weight: bold;
-    }
-    
-    .breadcrumb-item a:hover {
-        opacity: 1 !important;
-        text-decoration: underline !important;
-    }
-    
-    .icon-container {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-    }
-    
-    .btn-light:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-        transition: all 0.3s ease;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .display-6 {
-            font-size: 1.5rem;
-        }
-        
-        .icon-container {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .icon-container i {
-            font-size: 1.5rem !important;
-        }
-        
-        .card-body {
-            padding: 1.5rem !important;
-        }
-        
-        .btn-light {
-            padding: 0.5rem 1rem !important;
-            font-size: 0.875rem;
-        }
-    }
-</style>
-@endpush
+:root {
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #a5b4fc;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+}
+
+/* Enhanced Page Header Styles */
+.page-header {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+}
+
+.page-title-section .page-title {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.breadcrumb {
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.breadcrumb-item.active {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.page-actions .btn {
+    border-radius: 12px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-outline-secondary {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    color: var(--primary-color);
+    backdrop-filter: blur(10px);
+}
+
+.btn-outline-secondary:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
 
 .hover-lift {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -401,5 +430,22 @@ document.addEventListener('DOMContentLoaded', function() {
     width: 40px;
     height: 40px;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .page-actions {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+}
 </style>
+@endpush
 @endsection

@@ -5,29 +5,32 @@
 @section('content')
 <div class="container-fluid py-4">
     <!-- Enhanced Header Section -->
-    <div class="page-header mb-5">
+    <div class="page-header mb-4">
         <div class="row align-items-center">
-            <div class="col">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item"><a href="{{ route('landlord.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Contractors</li>
-                    </ol>
-                </nav>
-                <div class="d-flex align-items-center">
-                    <div class="page-icon me-3">
-                        <i class="fas fa-hard-hat"></i>
-                    </div>
-                    <div>
-                        <h1 class="page-title mb-1">Manage Contractors</h1>
-                        <p class="page-description mb-0">Approve or reject contractor requests and manage your contractors</p>
-                    </div>
+            <div class="col-lg-8">
+                <div class="page-title-section">
+                    <nav aria-label="breadcrumb" class="mb-2">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('landlord.dashboard') }}" class="text-decoration-none">
+                                    <i class="fas fa-home me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">Contractors</li>
+                        </ol>
+                    </nav>
+                    <h1 class="page-title mb-2">
+                        <i class="fas fa-hard-hat me-3"></i>Manage Contractors
+                    </h1>
+                    <p class="page-subtitle mb-0">Approve or reject contractor requests and manage your contractors</p>
                 </div>
             </div>
-            <div class="col-auto">
-                <a href="{{ route('landlord.dashboard') }}" class="btn btn-outline-primary me-2">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                </a>
+            <div class="col-lg-4 text-lg-end">
+                <div class="page-actions">
+                    <a href="{{ route('landlord.dashboard') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -221,51 +224,78 @@
 
 @push('styles')
 <style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --text-color: #1f2937;
+        --text-muted: #6b7280;
+        --border-color: #e5e7eb;
+        --bg-light: #f8fafc;
+    }
+
     /* Page Header Styling */
     .page-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
         border-radius: 20px;
         padding: 2rem;
-        color: white;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        border: 1px solid rgba(99, 102, 241, 0.1);
     }
     
-    .page-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        backdrop-filter: blur(10px);
-    }
-    
-    .page-title {
+    .page-title-section .page-title {
         font-size: 2rem;
         font-weight: 700;
-        margin: 0;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
     }
     
-    .page-description {
-        opacity: 0.9;
+    .page-title-section .page-subtitle {
+        color: var(--text-muted);
         font-size: 1.1rem;
+        margin: 0;
     }
     
     .breadcrumb {
         background: none;
         padding: 0;
         margin: 0;
+        font-size: 0.9rem;
     }
     
     .breadcrumb-item a {
-        color: rgba(255, 255, 255, 0.8);
+        color: var(--primary-color);
         text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: var(--primary-dark);
     }
     
     .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+    
+    .page-actions .btn {
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border: none;
+        color: white;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
         color: white;
     }
     

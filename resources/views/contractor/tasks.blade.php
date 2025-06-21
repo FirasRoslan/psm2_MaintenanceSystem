@@ -3,73 +3,55 @@
 @section('title', 'My Tasks')
 
 @section('content')
-<div class="container-fluid py-4">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="welcome-header bg-gradient-warning text-white rounded-4 p-4 mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="mb-1 fw-bold">My Tasks</h2>
-                        <p class="mb-0 opacity-90">View and manage your assigned maintenance tasks</p>
-                    </div>
-                    <div class="text-end">
-                        <div class="welcome-icon">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-3 p-3 bg-white bg-opacity-10 rounded-3">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <span>Track and update the status of your maintenance assignments efficiently.</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="{{ route('contractor.dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">My Tasks</li>
+<div class="container-fluid px-4 py-4">
+    <!-- Enhanced Header Section -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="page-title-section">
+                    <nav aria-label="breadcrumb" class="mb-2">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('contractor.dashboard') }}" class="text-decoration-none">
+                                    <i class="fas fa-home me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">My Tasks</li>
                         </ol>
                     </nav>
+                    <h1 class="page-title mb-2">
+                        <i class="fas fa-tasks me-3"></i>My Tasks
+                    </h1>
+                    <p class="page-subtitle mb-0">View and manage your assigned maintenance tasks</p>
                 </div>
-                <a href="{{ route('contractor.dashboard') }}" class="btn btn-outline-primary rounded-pill px-4">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                </a>
             </div>
-
-            @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
-                <div class="d-flex">
-                    <div class="me-3">
-                        <i class="fas fa-check-circle fa-lg"></i>
-                    </div>
-                    <div>
-                        <strong>Success!</strong> {{ session('success') }}
-                    </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="page-actions">
+                    <a href="{{ route('contractor.dashboard') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            @endif
-
-            @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
-                <div class="d-flex">
-                    <div class="me-3">
-                        <i class="fas fa-exclamation-circle fa-lg"></i>
-                    </div>
-                    <div>
-                        <strong>Error!</strong> {{ session('error') }}
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
         </div>
     </div>
+
+    <!-- Success Alert -->
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    <!-- Error Alert -->
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
 
     <!-- Task Statistics -->
     <div class="row mb-4">
@@ -472,6 +454,43 @@
 </div>
 
 <style>
+:root {
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --text-color: #1f2937;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-light: #f8fafc;
+}
+
+.page-header {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.breadcrumb {
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
 .stats-card {
     transition: transform 0.2s ease;
 }

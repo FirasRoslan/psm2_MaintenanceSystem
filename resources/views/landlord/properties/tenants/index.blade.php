@@ -30,9 +30,6 @@
                     <a href="{{ route('landlord.dashboard') }}" class="btn btn-outline-secondary me-2">
                         <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
                     </a>
-                    <a href="{{ route('landlord.tenants.create') }}" class="btn btn-modern-primary">
-                        <i class="fas fa-plus me-2"></i>Add New Tenant
-                    </a>
                 </div>
             </div>
         </div>

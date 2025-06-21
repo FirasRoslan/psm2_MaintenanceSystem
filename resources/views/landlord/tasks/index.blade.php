@@ -5,29 +5,32 @@
 @section('content')
 <div class="container-fluid py-4">
     <!-- Enhanced Header Section -->
-    <div class="page-header mb-5">
+    <div class="page-header mb-4">
         <div class="row align-items-center">
-            <div class="col">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item"><a href="{{ route('landlord.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Task Management</li>
-                    </ol>
-                </nav>
-                <div class="d-flex align-items-center">
-                    <div class="page-icon me-3">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div>
-                        <h1 class="page-title mb-1">Task Progress Management</h1>
-                        <p class="page-description mb-0">Monitor maintenance progress by contractors with detailed phase tracking</p>
-                    </div>
+            <div class="col-lg-8">
+                <div class="page-title-section">
+                    <nav aria-label="breadcrumb" class="mb-2">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('landlord.dashboard') }}" class="text-decoration-none">
+                                    <i class="fas fa-home me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">Task Management</li>
+                        </ol>
+                    </nav>
+                    <h1 class="page-title mb-2">
+                        <i class="fas fa-tasks me-3"></i>Task Progress Management
+                    </h1>
+                    <p class="page-subtitle mb-0">Monitor maintenance progress by contractors with detailed phase tracking</p>
                 </div>
             </div>
-            <div class="col-auto">
-                <a href="{{ route('landlord.dashboard') }}" class="btn btn-outline-primary me-2">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                </a>
+            <div class="col-lg-4 text-lg-end">
+                <div class="page-actions">
+                    <a href="{{ route('landlord.dashboard') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -140,69 +143,80 @@
 </div>
 
 <style>
-/* Enhanced Page Header Styles */
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    padding: 2rem;
-    color: white;
-    position: relative;
-    overflow: hidden;
-}
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --text-color: #1f2937;
+        --text-muted: #6b7280;
+        --border-color: #e5e7eb;
+        --bg-light: #f8fafc;
+    }
 
-.page-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
-    opacity: 0.3;
-}
-
-.page-header * {
-    position: relative;
-    z-index: 1;
-}
-
-.page-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    backdrop-filter: blur(10px);
-}
-
-.page-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-}
-
-.page-description {
-    opacity: 0.9;
-    font-size: 1rem;
-}
-
-.breadcrumb {
-    background: none;
-    padding: 0;
-    margin: 0;
-}
-
-.breadcrumb-item a {
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-}
-
-.breadcrumb-item.active {
-    color: white;
-}
+    /* Page Header Styling */
+    .page-header {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+    }
+    
+    .page-title-section .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-title-section .page-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    .breadcrumb {
+        background: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: var(--primary-dark);
+    }
+    
+    .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+    
+    .page-actions .btn {
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border: none;
+        color: white;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        color: white;
+    }
 
 /* Enhanced Filter Tabs */
 .filter-tabs-container {
