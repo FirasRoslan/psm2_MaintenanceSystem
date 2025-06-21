@@ -57,53 +57,14 @@
                     </div>
                 </div>
 
-                <!-- Progress Section -->
-                <div class="progress-section">
-                    <div class="progress-circle-container">
-                        <div class="progress-circle">
-                            <svg class="progress-ring" width="80" height="80">
-                                <circle
-                                    stroke="#e2e8f0"
-                                    stroke-width="6"
-                                    fill="transparent"
-                                    r="34"
-                                    cx="40"
-                                    cy="40"/>
-                                <circle
-                                    stroke="@if($task->task_status == 'completed') #10b981 @elseif($task->task_status == 'in_progress') #3b82f6 @else #6b7280 @endif"
-                                    stroke-width="6"
-                                    fill="transparent"
-                                    r="34"
-                                    cx="40"
-                                    cy="40"
-                                    stroke-dasharray="{{ 213.6 * (($task->progress_percentage ?? 0) / 100) }} 213.6"
-                                    stroke-dashoffset="0"
-                                    transform="rotate(-90 40 40)"
-                                    class="progress-stroke"/>
-                            </svg>
-                            <div class="progress-text">
-                                <span class="progress-percentage">{{ $task->progress_percentage ?? 0 }}%</span>
-                                <span class="progress-label">Complete</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Task Info Footer -->
                 <div class="task-footer">
                     <div class="task-meta">
-                        <div class="meta-item">
+                        <div class="meta-item-single">
                             <i class="fas fa-calendar-alt meta-icon"></i>
                             <div class="meta-content">
                                 <span class="meta-label">Assigned</span>
                                 <span class="meta-value">{{ $task->created_at->format('M d, Y') }}</span>
-                            </div>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-layer-group meta-icon"></i>
-                            <div class="meta-content">
-                                <span class="meta-label">Phases</span>
-                                <span class="meta-value">{{ $task->phases->count() }}/{{ $task->phases->count() }}</span>
                             </div>
                         </div>
                     </div>
@@ -422,60 +383,6 @@
     margin: 0;
 }
 
-/* Progress Section */
-.progress-section {
-    padding: 1.5rem;
-    display: flex;
-    justify-content: center;
-    background: #fafbfc;
-}
-
-.progress-circle-container {
-    position: relative;
-}
-
-.progress-circle {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.progress-ring {
-    transform: rotate(-90deg);
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-}
-
-.progress-stroke {
-    transition: stroke-dasharray 0.6s ease-in-out;
-    stroke-linecap: round;
-}
-
-.progress-text {
-    position: absolute;
-    text-align: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.progress-percentage {
-    display: block;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1e293b;
-    line-height: 1;
-}
-
-.progress-label {
-    display: block;
-    font-size: 0.75rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 0.25rem;
-}
-
 /* Task Footer */
 .task-footer {
     padding: 1rem 1.5rem 1.5rem;
@@ -483,19 +390,20 @@
 }
 
 .task-meta {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    display: flex;
+    justify-content: center;
 }
 
-.meta-item {
+.meta-item-single {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem;
+    padding: 0.75rem 1.5rem;
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
+    min-width: 200px;
+    justify-content: center;
 }
 
 .meta-icon {
@@ -594,50 +502,31 @@
         gap: 1.5rem;
     }
     
-    .task-card:hover {
-        transform: translateY(-5px);
+    .task-card {
+        margin: 0 1rem;
     }
     
     .task-header {
         padding: 1rem;
     }
     
-    .task-status {
-        position: static;
-        margin-top: 1rem;
+    .task-title {
+        font-size: 1.1rem;
     }
     
     .contractor-section {
         padding: 0 1rem 1rem;
     }
     
-    .progress-section {
-        padding: 1rem;
-    }
-    
     .task-footer {
         padding: 1rem;
     }
     
-    .task-meta {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
+    .meta-item-single {
+        padding: 0.5rem 1rem;
+        min-width: auto;
     }
 }
-
-@media (max-width: 480px) {
-    .empty-state {
-        padding: 2rem 1rem;
-    }
-    
-    .empty-state-icon {
-        width: 80px;
-        height: 80px;
-        font-size: 2rem;
-    }
-}
-
-    
 </style>
 
 <script>
