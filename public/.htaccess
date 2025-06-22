@@ -23,3 +23,12 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# ✅ Allow direct access to image files anywhere in /public
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+    Require all granted
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
