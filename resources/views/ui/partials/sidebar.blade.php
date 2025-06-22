@@ -1,9 +1,9 @@
 <div class="p-3">
     <div class="text-center mb-4 sidebar-brand">
-        <img src="{{ asset('image/logo.png') }}" 
+        <img src="{{ asset('image/logo2.png') }}" 
              alt="Parit Raja Rental House" 
-             class="img-fluid" 
-             style="width: 200px; height: auto; margin-bottom: 10px;">
+             class="img-fluid sidebar-logo" 
+             style="width: 100%; height: auto; max-width: 100%; object-fit: contain; margin-bottom: 10px;">
     </div>
     @auth
         @if(auth()->user()->isLandlord())
@@ -73,6 +73,25 @@
 </div>
 
 <style>
+/* Custom scrollbar for sidebar */
+#sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
 .sidebar-section {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 0.75rem;

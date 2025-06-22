@@ -804,7 +804,7 @@
                         <ul>
                             <li><i class="fas fa-map-marker-alt me-2"></i> Parit Raja, Johor, Malaysia</li>
                             <li><i class="fas fa-phone-alt me-2"></i> +60 12-345-6789</li>
-                            <li><i class="fas fa-envelope me-2"></i> info@paritrajamental.com</li>
+                            <li><i class="fas fa-envelope me-2"></i> info@paritrajarental.com</li>
                         </ul>
                     </div>
                 </div>

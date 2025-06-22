@@ -160,6 +160,8 @@
             z-index: 1000;
             box-shadow: var(--shadow-lg);
             overflow-x: hidden;
+            overflow-y: auto;
+            max-height: 100vh;
         }
 
         #sidebar.collapsed {
@@ -202,7 +204,7 @@
         .sidebar-brand img {
             max-width: 100%;
             height: auto;
-            filter: brightness(0) invert(1);
+            /* filter: brightness(0) invert(1); */
             transition: all 0.3s ease;
         }
 
@@ -529,7 +531,7 @@
 </html>
 
 <!-- Sidebar menu - This is a partial example of where to add the new menu item -->
-<ul class="nav flex-column">
+{{-- <ul class="nav flex-column">
     <!-- Tenants menu item -->
     <li class="nav-item">
         <a href="{{ route('landlord.tenants.index') }}" class="nav-link {{ request()->routeIs('landlord.tenants.*') ? 'active' : '' }}">
@@ -560,4 +562,4 @@
     <a href="{{ route('landlord.history.index') }}" class="nav-link {{ request()->routeIs('landlord.history.*') ? 'active' : '' }}">
         <i class="fas fa-history"></i> History
     </a>
-</ul>
+</ul> --}}
